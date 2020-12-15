@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "797942919400",
+    "project_id": "extrememe-d48cc",
+    "storage_bucket": "extrememe-d48cc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:797942919400:android:69a0109ec98326d63b595d",
+        "android_client_info": {
+          "package_name": "com.example.extrememe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "797942919400-5jc0m6ccosn27giqbdmhbvelm84j4k52.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGFvSUcJpTnmzAPBb28h2jQLLDdq6vv4E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "797942919400-5jc0m6ccosn27giqbdmhbvelm84j4k52.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
