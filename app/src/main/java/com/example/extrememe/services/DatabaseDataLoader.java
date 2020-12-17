@@ -1,11 +1,14 @@
 package com.example.extrememe.services;
 
-import android.util.Log;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class DatabaseDataLoader {
     private static FirebaseFirestore fireStoreDB;
+    private static FirebaseStorage storage = FirebaseStorage.getInstance();
+    private static StorageReference storageRef ;
+
 
     private DatabaseDataLoader() {
     }
@@ -16,5 +19,13 @@ public class DatabaseDataLoader {
         }
 
         return fireStoreDB;
+    }
+
+    public static StorageReference getStorageRef(String url) {
+        if(storageRef == null) {
+            storageRef = storage.getReferenceFromUrl(url);
+        }
+
+        return storageRef;
     }
 }
