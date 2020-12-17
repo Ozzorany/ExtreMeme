@@ -19,7 +19,7 @@ public class Model {
 
     List<Meme> data = new LinkedList<Meme>();
 
-    public List<Meme> getAllStudents() {
+    public List<Meme> getAllMemes() {
         return data;
     }
 }

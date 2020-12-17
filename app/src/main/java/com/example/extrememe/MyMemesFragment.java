@@ -27,7 +27,7 @@ public class MyMemesFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         memesRv.setLayoutManager(layoutManager);
 
-        List<Meme> data = Model.instance.getAllStudents();
+        List<Meme> data = Model.instance.getAllMemes();
 
         MyMemesAdapter adapter = new MyMemesAdapter(getLayoutInflater());
         adapter.data = data;
