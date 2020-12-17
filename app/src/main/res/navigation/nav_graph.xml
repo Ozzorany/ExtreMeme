@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFeedFragment">
+
+    <fragment
+        android:id="@+id/myMemesFragment"
+        android:name="com.example.extrememe.MyMemesFragment"
+        android:label="My Memes"
+        tools:layout="@layout/fragment_my_memes" />
+    <fragment
+        android:id="@+id/createMemeFragment"
+        android:name="com.example.extrememe.CreateMemeFragment"
+        android:label="Create Meme"
+        tools:layout="@layout/fragment_create_meme" />
+    <fragment
+        android:id="@+id/mainFeedFragment"
+        android:name="com.example.extrememe.MainFeedFragment"
+        android:label="Main Feed"
+        tools:layout="@layout/fragment_main_feed">
+        <action
+            android:id="@+id/action_mainFeed_to_createMeme"
+            app:destination="@id/createMemeFragment" />
+        <action
+            android:id="@+id/action_mainFeed_to_myMemes"
+            app:destination="@id/myMemesFragment" />
+    </fragment>
+</navigation>
