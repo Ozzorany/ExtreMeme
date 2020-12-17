@@ -1,10 +1,13 @@
 package com.example.extrememe.model;
 
+import java.util.List;
+
 public class Meme {
     String id;
+    String userId;
     String imageUrl;
     String description;
-    String[] usersLikes;
+    List<String> usersLikes;
 
     public String getId() {
         return id;
@@ -30,11 +33,19 @@ public class Meme {
         this.description = description;
     }
 
-    public String[] getUsersLikes() {
+    public List<String> getUsersLikes() {
         return usersLikes;
     }
 
-    public void setUsersLikes(String[] usersLikes) {
+    public void setUsersLikes(List<String> usersLikes) {
         this.usersLikes = usersLikes;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }
