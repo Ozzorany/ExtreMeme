@@ -44,7 +44,6 @@ public class MyMemesFragment extends Fragment {
                 adapter.setOnClickListener(new MyMemesAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(int position) {
-                        Log.d("TAG","meme " + position + " was clicked ");
                     }
                 });
             }
