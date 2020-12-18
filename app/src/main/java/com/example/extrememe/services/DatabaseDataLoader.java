@@ -6,15 +6,12 @@ import com.google.firebase.storage.StorageReference;
 
 public class DatabaseDataLoader {
     private static FirebaseFirestore fireStoreDB;
-    private static FirebaseStorage storage = FirebaseStorage.getInstance();
-    private static StorageReference storageRef ;
-
 
     private DatabaseDataLoader() {
     }
 
     public static FirebaseFirestore getDB() {
-        if(fireStoreDB == null) {
+        if (fireStoreDB == null) {
             fireStoreDB = FirebaseFirestore.getInstance();
         }
 
@@ -22,10 +19,6 @@ public class DatabaseDataLoader {
     }
 
     public static StorageReference getStorageRef(String url) {
-        if(storageRef == null) {
-            storageRef = storage.getReferenceFromUrl(url);
-        }
-
-        return storageRef;
+        return FirebaseStorage.getInstance().getReferenceFromUrl(url);
     }
 }
