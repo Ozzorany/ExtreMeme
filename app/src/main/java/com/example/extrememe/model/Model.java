@@ -1,5 +1,6 @@
 package com.example.extrememe.model;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class Model {
             meme.id = "" + i;
             meme.description = "Meme number " + i;
             meme.imageUrl = "";
-            meme.usersLikes = new String[]{};
+            meme.usersLikes = new ArrayList<>();
             data.add(meme);
         }
     }

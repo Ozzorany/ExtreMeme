@@ -46,6 +46,6 @@ public class MyMemesAdapter extends RecyclerView.Adapter<MyMemesViewHolder>{
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return data != null ? data.size() : 0;
     }
 }

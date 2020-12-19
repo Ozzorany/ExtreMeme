@@ -34,7 +34,7 @@ public class MyMemesViewHolder extends RecyclerView.ViewHolder{
 
     public void bindData(Meme meme, int position) {
         memeDescription.setText(meme.getDescription());
-        memeLikes.setText(meme.getUsersLikes().length + "");
+        memeLikes.setText(meme.getUsersLikes().size() + "");
         this.position = position;
     }
 }
