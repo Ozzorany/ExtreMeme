@@ -9,7 +9,11 @@
         android:id="@+id/myMemesFragment"
         android:name="com.example.extrememe.MyMemesFragment"
         android:label="My Memes"
-        tools:layout="@layout/fragment_my_memes" />
+        tools:layout="@layout/fragment_my_memes" >
+        <action
+            android:id="@+id/action_myMemes_to_editMeme"
+            app:destination="@id/editMemeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/createMemeFragment"
         android:name="com.example.extrememe.CreateMemeFragment"
@@ -26,5 +30,14 @@
         <action
             android:id="@+id/action_mainFeed_to_myMemes"
             app:destination="@id/myMemesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editMemeFragment"
+        android:name="com.example.extrememe.EditMemeFragment"
+        android:label="Edit Meme"
+        tools:layout="@layout/fragment_edit_meme" >
+        <argument
+            android:name="meme"
+            app:argType="com.example.extrememe.model.Meme" />
     </fragment>
 </navigation>
