@@ -1,7 +1,6 @@
 package com.example.extrememe;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +32,8 @@ public class MyMemesFragment extends Fragment {
         memesRv.setAdapter(adapter);
 
 
-        new MemesService().getMemesByUserId("1234", new MemesService.MyCallBack() {
+
+        new MemesService().getMemesByUserId("1234", new MemesService.getMemesCallBack() {
             @Override
             public void onCallback(List<Meme> memes) {
                 data = memes;

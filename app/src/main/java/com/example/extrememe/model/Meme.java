@@ -1,8 +1,9 @@
 package com.example.extrememe.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Meme {
+public class Meme implements Serializable {
     String id;
     String userId;
     String imageUrl;
