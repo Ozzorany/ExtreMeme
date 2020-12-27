@@ -24,17 +24,12 @@ public class MyMemesViewHolder extends RecyclerView.ViewHolder{
         memeImage = itemView.findViewById(R.id.listrow_image_v);
         memeLikes = itemView.findViewById(R.id.likes_text_v);
 
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.onItemClick(position);
-            }
-        });
+        itemView.setOnClickListener(view -> listener.onItemClick(position));
     }
 
     public void bindData(Meme meme, int position) {
         memeDescription.setText(meme.getDescription());
-        memeLikes.setText(meme.getUsersLikes().size() + "");
+        memeLikes.setText(meme.getUsersLikes() != null ? meme.getUsersLikes().size() + "" : "");
         this.position = position;
     }
 }

@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemesService {
+    private static final String TAG = "MemesService";
+
     public MemesService() {
     }
 
@@ -27,17 +29,14 @@ public class MemesService {
 
         DatabaseDataLoader.getDB().collection("memes")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                list.add(document.toObject(Meme.class));
-                            }
-                            myCallback.onCallback(list);
-                        } else {
-                            Log.w("warning", "Error getting documents.", task.getException());
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            list.add(document.toObject(Meme.class));
                         }
+                        myCallback.onCallback(list);
+                    } else {
+                        Log.w(TAG, "Error getting documents.", task.getException());
                     }
                 });
     }
@@ -49,17 +48,14 @@ public class MemesService {
         DatabaseDataLoader.getDB().collection("memes")
                 .whereEqualTo("userId", userId)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                list.add(document.toObject(Meme.class));
-                            }
-                            myCallback.onCallback(list);
-                        } else {
-                            Log.w("warning", "Error getting documents.", task.getException());
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            list.add(document.toObject(Meme.class));
                         }
+                        myCallback.onCallback(list);
+                    } else {
+                        Log.w("warning", "Error getting documents.", task.getException());
                     }
                 });
     }
