@@ -70,11 +70,11 @@ public class MainFeedFragment extends Fragment {
 
     private void initRandomButton() {
         View v = getView().findViewById(R.id.random_button);
-        ((Button)v).setOnClickListener(randomButton -> {
-            for(String selectedCategoryId : selectedCategories) {
+        ((Button) v).setOnClickListener(randomButton -> {
+            for (String selectedCategoryId : selectedCategories) {
                 getView().findViewById(selectedCategoryId.hashCode()).setBackgroundColor(UNSELECTED_CATEGORY);
             }
-            this.selectCategory((Button)randomButton);
+            this.selectCategory((Button) randomButton);
             this.filterMemes();
         });
     }
@@ -82,9 +82,9 @@ public class MainFeedFragment extends Fragment {
     private void filterMemes() {
         this.filteredMemes.clear();
 
-        if(selectedCategories != null && selectedCategories.size() > 0) {
+        if (selectedCategories != null && selectedCategories.size() > 0) {
             for (Meme meme : allMemes) {
-                if(meme.getCategories() != null) {
+                if (meme.getCategories() != null) {
                     for (String categoryId : meme.getCategories()) {
                         for (String selectedCategoryId : selectedCategories) {
                             if (selectedCategoryId.equals(categoryId)) {
@@ -95,7 +95,7 @@ public class MainFeedFragment extends Fragment {
                 }
             }
         } else {
-            this.filteredMemes = (List<Meme>) ((ArrayList<Meme>)allMemes).clone();
+            this.filteredMemes = (List<Meme>) ((ArrayList<Meme>) allMemes).clone();
         }
 
         this.adapter.data = filteredMemes;
@@ -129,20 +129,20 @@ public class MainFeedFragment extends Fragment {
 
     private View.OnClickListener onClickCategory() {
         return v -> {
-            this.selectCategory((Button)v);
+            this.selectCategory((Button) v);
             this.filterMemes();
         };
     }
 
     private void selectCategory(Button button) {
-        if(button.getText().equals("Random")) {
+        if (button.getText().equals("Random")) {
             button.setBackgroundColor(SELECTED_CATEGORY);
             this.selectedCategories.clear();
             return;
         }
 
         for (String selectedCategoryId : selectedCategories) {
-            if(button.getTag().equals(selectedCategoryId)) {
+            if (button.getTag().equals(selectedCategoryId)) {
                 button.setBackgroundColor(UNSELECTED_CATEGORY);
                 selectedCategories.remove(selectedCategoryId);
                 return;
@@ -156,6 +156,6 @@ public class MainFeedFragment extends Fragment {
 
     private void unselectRandomButton(int unselectedButtonColor) {
         View v = getView().findViewById(R.id.random_button);
-        ((Button)v).setBackgroundColor(unselectedButtonColor);
+        ((Button) v).setBackgroundColor(unselectedButtonColor);
     }
 }

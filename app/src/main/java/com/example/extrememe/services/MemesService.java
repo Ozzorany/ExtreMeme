@@ -36,14 +36,13 @@ public class MemesService {
         DatabaseDataLoader.getDB().collection("memes")
                 .get()
                 .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                list.add(document.toObject(Meme.class));
-                            }
-                            getMemesCallback.onCallback(list);
-                        } else {
-                            Log.w("warning", "Error getting documents.", task.getException());
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            list.add(document.toObject(Meme.class));
                         }
+                        getMemesCallback.onCallback(list);
+                    } else {
+                        Log.w(TAG, "Error getting documents.", task.getException());
                     }
                 });
     }
@@ -56,14 +55,14 @@ public class MemesService {
                 .whereEqualTo("userId", userId)
                 .get()
                 .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                list.add(document.toObject(Meme.class));
-                            }
-                            getMemesCallback.onCallback(list);
-                        } else {
-                            Log.w(TAG, "Error getting documents.", task.getException());
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            list.add(document.toObject(Meme.class));
                         }
+                        getMemesCallback.onCallback(list);
+                    } else {
+                        Log.w(TAG, "Error getting documents.", task.getException());
+                    }
                 });
     }
 
@@ -71,18 +70,8 @@ public class MemesService {
 
         DatabaseDataLoader.getDB().collection("memes").document(meme.getId())
                 .update("description", meme.getDescription())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        updateMemeCallBack.onCallback();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("warning", "Error updating document", e);
-                    }
-                });
+                .addOnSuccessListener(aVoid -> updateMemeCallBack.onCallback())
+                .addOnFailureListener(e -> Log.w(TAG, "Error updating document", e));
 
     }
 }
