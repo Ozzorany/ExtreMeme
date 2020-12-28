@@ -9,6 +9,7 @@ public class Meme implements Serializable {
     String imageUrl;
     String description;
     List<String> usersLikes;
+    List<String> categories;
 
     public String getId() {
         return id;
@@ -48,5 +49,13 @@ public class Meme implements Serializable {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
     }
 }
