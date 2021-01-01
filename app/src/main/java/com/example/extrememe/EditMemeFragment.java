@@ -1,9 +1,9 @@
 package com.example.extrememe;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +34,7 @@ public class EditMemeFragment extends Fragment {
         ImageView memeImage = view.findViewById(R.id.editmeme_image_v);
         Button saveBtn = view.findViewById(R.id.editmeme_btn);
         Meme meme = EditMemeFragmentArgs.fromBundle(getArguments()).getMeme();
+        AlertDialog.Builder alBuilder = new AlertDialog.Builder(view.getContext());
 
         memeDescription.setText(meme.getDescription());
 
@@ -60,7 +61,8 @@ public class EditMemeFragment extends Fragment {
                 MemeModel.instance.updateMeme(meme, new MemeModel.UpdateMemeListener() {
                     @Override
                     public void onComplete(Void result) {
-                        Log.d("info", "Meme updated");
+                        alBuilder.setTitle("SUCCESS").setMessage("Meme changes were saved");
+                        alBuilder.show();
                     }
                 });
             }
