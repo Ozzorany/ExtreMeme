@@ -1,5 +1,7 @@
 package com.example.extrememe;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +30,7 @@ public class MyMemesFragment extends Fragment {
         memesRv.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         memesRv.setLayoutManager(layoutManager);
+        AlertDialog.Builder alBuilder = new AlertDialog.Builder(view.getContext());
         adapter = new MyMemesAdapter(getLayoutInflater());
         memesRv.setAdapter(adapter);
         adapter.isEditAvailable = true;
@@ -42,6 +45,32 @@ public class MyMemesFragment extends Fragment {
                 adapter.setOnClickListener(new MyMemesAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(int position) {
+                    }
+                });
+
+                adapter.setOnRemoveListener(new MyMemesAdapter.OnMemeRemoveListener() {
+                    @Override
+                    public void onItemRemove(Meme meme) {
+                        alBuilder.setTitle("INFO").setMessage("Are you sure you want to delete the meme?").setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                MemeModel.instance.removeMeme(meme.getId(), new MemeModel.RemoveMemeListener() {
+                                    @Override
+                                    public void onComplete(Void result) {
+                                        adapter.data.remove(meme);
+                                        adapter.notifyDataSetChanged();
+                                        dialogInterface.dismiss();
+                                    }
+                                });
+                            }
+                        }).setNegativeButton("no", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        });
+
+                        alBuilder.show();
                     }
                 });
             }
