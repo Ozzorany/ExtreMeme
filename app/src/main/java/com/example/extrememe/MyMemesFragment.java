@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.extrememe.adapters.MyMemesAdapter;
 import com.example.extrememe.model.Meme;
-import com.example.extrememe.services.MemesService;
+import com.example.extrememe.model.meme.MemeModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,16 +30,14 @@ public class MyMemesFragment extends Fragment {
         memesRv.setLayoutManager(layoutManager);
         adapter = new MyMemesAdapter(getLayoutInflater());
         memesRv.setAdapter(adapter);
+        adapter.isEditAvailable = true;
 
-
-
-        new MemesService().getMemesByUserId("1234", new MemesService.getMemesCallBack() {
+        MemeModel.instance.getMemesByUserId("1234", new MemeModel.GetMemesByUserListener() {
             @Override
-            public void onCallback(List<Meme> memes) {
-                data = memes;
+            public void onComplete(List<Meme> result) {
+                data = result;
                 adapter.data = data;
                 adapter.notifyDataSetChanged();
-
 
                 adapter.setOnClickListener(new MyMemesAdapter.OnItemClickListener() {
                     @Override

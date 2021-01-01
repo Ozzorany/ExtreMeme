@@ -14,6 +14,7 @@ import java.util.List;
 
 public class MyMemesAdapter extends RecyclerView.Adapter<MyMemesViewHolder>{
     public List<Meme> data;
+    public boolean isEditAvailable;
     LayoutInflater inflater;
     private OnItemClickListener listener;
 
@@ -33,7 +34,7 @@ public class MyMemesAdapter extends RecyclerView.Adapter<MyMemesViewHolder>{
     @Override
     public MyMemesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = inflater.inflate(R.layout.list_meme,parent,false);
-        MyMemesViewHolder holder = new MyMemesViewHolder(view);
+        MyMemesViewHolder holder = new MyMemesViewHolder(view, this.isEditAvailable);
         holder.listener = listener;
         return holder;
     }

@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import androidx.fragment.app.Fragment;
 
 import com.example.extrememe.model.Meme;
-import com.example.extrememe.services.MemesService;
+import com.example.extrememe.model.meme.MemeModel;
 
 public class EditMemeFragment extends Fragment {
 
@@ -57,9 +57,9 @@ public class EditMemeFragment extends Fragment {
             public void onClick(View view) {
                 memeDescription.clearFocus();
 
-                new MemesService().updateDocument(meme, new MemesService.UpdateMemeCallBack() {
+                MemeModel.instance.updateMeme(meme, new MemeModel.UpdateMemeListener() {
                     @Override
-                    public void onCallback() {
+                    public void onComplete(Void result) {
                         Log.d("info", "Meme updated");
                     }
                 });
