@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.extrememe.adapters.MyMemesAdapter;
 import com.example.extrememe.model.Category;
 import com.example.extrememe.model.Meme;
+import com.example.extrememe.model.meme.MemeModel;
 import com.example.extrememe.services.CategoryService;
-import com.example.extrememe.services.MemesService;
 import com.example.extrememe.utils.LayoutUnitUtils;
 
 import java.util.ArrayList;
@@ -62,9 +62,12 @@ public class MainFeedFragment extends Fragment {
             this.initRandomButton();
         });
 
-        new MemesService().getAllMemes(memes -> {
-            allMemes = memes;
-            this.filterMemes();
+        MemeModel.instance.getAllMemes(new MemeModel.GetAllMemesListener() {
+            @Override
+            public void onComplete(List<Meme> result) {
+                allMemes = result;
+                filterMemes();
+            }
         });
     }
 
