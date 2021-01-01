@@ -72,7 +72,7 @@ public class MainFeedFragment extends Fragment {
         View v = getView().findViewById(R.id.random_button);
         ((Button) v).setOnClickListener(randomButton -> {
             for (String selectedCategoryId : selectedCategories) {
-                getView().findViewById(selectedCategoryId.hashCode()).setBackgroundColor(UNSELECTED_CATEGORY);
+                getView().findViewWithTag(selectedCategoryId).setBackgroundColor(UNSELECTED_CATEGORY);
             }
             this.selectCategory((Button) randomButton);
             this.filterMemes();
@@ -108,7 +108,6 @@ public class MainFeedFragment extends Fragment {
         final int margin = 5;
 
         Button myButton = new Button(this.getContext());
-        myButton.setId(category.getId().hashCode());
         myButton.setText(category.getName());
         myButton.setWidth(LayoutUnitUtils.getInstance()
                 .convertPixelToDpUnit(categoryButtonWidth, getResources().getDisplayMetrics()));
