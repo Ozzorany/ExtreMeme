@@ -30,6 +30,7 @@ public class MyMemesFragment extends Fragment {
         memesRv.setLayoutManager(layoutManager);
         adapter = new MyMemesAdapter(getLayoutInflater());
         memesRv.setAdapter(adapter);
+        adapter.isEditAvailable = true;
 
         MemeModel.instance.getMemesByUserId("1234", new MemeModel.GetMemesByUserListener() {
             @Override

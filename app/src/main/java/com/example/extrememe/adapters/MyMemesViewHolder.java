@@ -13,8 +13,9 @@ import com.example.extrememe.R;
 import com.example.extrememe.model.Meme;
 
 
-public class MyMemesViewHolder extends RecyclerView.ViewHolder{
+public class MyMemesViewHolder extends RecyclerView.ViewHolder {
     public MyMemesAdapter.OnItemClickListener listener;
+    private boolean isEditAvailable;
     TextView memeDescription;
     TextView memeLikes;
     TextView editMeme;
@@ -22,14 +23,17 @@ public class MyMemesViewHolder extends RecyclerView.ViewHolder{
     Meme currentMeme;
     int position;
 
-    public MyMemesViewHolder(@NonNull View itemView) {
+    public MyMemesViewHolder(@NonNull View itemView, boolean isEditable) {
         super(itemView);
         memeDescription = itemView.findViewById(R.id.listrow_text_v);
         memeImage = itemView.findViewById(R.id.listrow_image_v);
         memeLikes = itemView.findViewById(R.id.likes_text_v);
         editMeme = itemView.findViewById(R.id.listmeme_edit_text_v);
+        this.isEditAvailable = isEditable;
 
-        editMeme.setVisibility(View.VISIBLE);
+        if (this.isEditAvailable) {
+            editMeme.setVisibility(View.VISIBLE);
+        }
 
         editMeme.setOnClickListener(new View.OnClickListener() {
             @Override
