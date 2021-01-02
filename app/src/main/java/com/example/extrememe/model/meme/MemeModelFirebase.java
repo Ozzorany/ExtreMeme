@@ -53,4 +53,11 @@ public class MemeModelFirebase {
                 .addOnSuccessListener(listener::onComplete)
                 .addOnFailureListener(e -> Log.w(TAG, "Error updating document", e));
     }
+
+    public void removeMeme(String memeId, MemeModel.RemoveMemeListener listener) {
+        DatabaseDataLoader.getDB().collection("memes").document(memeId)
+                .delete()
+                .addOnSuccessListener(listener::onComplete)
+                .addOnFailureListener(e -> Log.w(TAG, "Error removing document", e));
+    }
 }

@@ -16,7 +16,8 @@ public class MyMemesAdapter extends RecyclerView.Adapter<MyMemesViewHolder>{
     public List<Meme> data;
     public boolean isEditAvailable;
     LayoutInflater inflater;
-    private OnItemClickListener listener;
+    private OnItemClickListener onItemClickListener;
+    private OnMemeRemoveListener onRemoveListener;
 
     public MyMemesAdapter(LayoutInflater inflater){
         this.inflater = inflater;
@@ -25,9 +26,16 @@ public class MyMemesAdapter extends RecyclerView.Adapter<MyMemesViewHolder>{
     public interface OnItemClickListener{
         void onItemClick(int position);
     }
+    public interface OnMemeRemoveListener{
+        void onItemRemove(Meme meme);
+    }
 
     public void setOnClickListener(OnItemClickListener listener){
-        this.listener = listener;
+        this.onItemClickListener = listener;
+    }
+
+    public void setOnRemoveListener(OnMemeRemoveListener onRemoveListener) {
+        this.onRemoveListener = onRemoveListener;
     }
 
     @NonNull
@@ -35,7 +43,8 @@ public class MyMemesAdapter extends RecyclerView.Adapter<MyMemesViewHolder>{
     public MyMemesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = inflater.inflate(R.layout.list_meme,parent,false);
         MyMemesViewHolder holder = new MyMemesViewHolder(view, this.isEditAvailable);
-        holder.listener = listener;
+        holder.onItemClickListener = onItemClickListener;
+        holder.onMemeRemoveListener = onRemoveListener;
         return holder;
     }
 
