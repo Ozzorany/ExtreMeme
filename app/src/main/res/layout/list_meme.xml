@@ -63,4 +63,17 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/likes_text_v"
         app:layout_constraintTop_toBottomOf="@+id/listrow_text_v" />
+
+    <ImageView
+        android:id="@+id/listrow_remove_meme"
+        android:layout_width="34dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="300dp"
+        android:layout_marginTop="4dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.922"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/listrow_image_v"
+        app:srcCompat="@drawable/ic_baseline_delete_24" />
 </androidx.constraintlayout.widget.ConstraintLayout>

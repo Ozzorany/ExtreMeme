@@ -13,23 +13,31 @@ import com.example.extrememe.R;
 import com.example.extrememe.model.Meme;
 
 
-public class MyMemesViewHolder extends RecyclerView.ViewHolder{
-    public MyMemesAdapter.OnItemClickListener listener;
+public class MyMemesViewHolder extends RecyclerView.ViewHolder {
+    public MyMemesAdapter.OnItemClickListener onItemClickListener;
+    public MyMemesAdapter.OnMemeRemoveListener onMemeRemoveListener;
+    private boolean isEditAvailable;
     TextView memeDescription;
     TextView memeLikes;
     TextView editMeme;
     ImageView memeImage;
+    ImageView removeMeme;
     Meme currentMeme;
     int position;
 
-    public MyMemesViewHolder(@NonNull View itemView) {
+    public MyMemesViewHolder(@NonNull View itemView, boolean isEditable) {
         super(itemView);
         memeDescription = itemView.findViewById(R.id.listrow_text_v);
         memeImage = itemView.findViewById(R.id.listrow_image_v);
         memeLikes = itemView.findViewById(R.id.likes_text_v);
         editMeme = itemView.findViewById(R.id.listmeme_edit_text_v);
+        removeMeme = itemView.findViewById(R.id.listrow_remove_meme);
+        this.isEditAvailable = isEditable;
 
-        editMeme.setVisibility(View.VISIBLE);
+        if (this.isEditAvailable) {
+            editMeme.setVisibility(View.VISIBLE);
+            removeMeme.setVisibility(View.VISIBLE);
+        }
 
         editMeme.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -39,7 +47,8 @@ public class MyMemesViewHolder extends RecyclerView.ViewHolder{
             }
         });
 
-        itemView.setOnClickListener(view -> listener.onItemClick(position));
+        itemView.setOnClickListener(view -> onItemClickListener.onItemClick(position));
+        removeMeme.setOnClickListener(view -> onMemeRemoveListener.onItemRemove(currentMeme));
     }
 
     public void bindData(Meme meme, int position) {
