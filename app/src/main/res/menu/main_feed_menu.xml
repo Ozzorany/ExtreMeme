@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/logged_in_display_name"
+        app:showAsAction="ifRoom"
+        android:title="@string/default_sign_in_name_display"/>
+    <item
+        android:id="@+id/google_sign_out_button"
+        app:showAsAction="ifRoom"
+        android:title="@string/sign_out"
+        android:icon="@drawable/google_sign_out"
+        android:visible="false"/>
+    <item
+        android:id="@+id/google_sign_in_button"
+        android:icon="@drawable/google_signin"
+        android:title="@string/sign_in"
+        app:showAsAction="ifRoom" />
+</menu>
