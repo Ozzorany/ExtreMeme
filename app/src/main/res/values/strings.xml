@@ -2,4 +2,7 @@
     <string name="app_name">ExtreMeme</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="default_sign_in_name_display">לא מחובר</string>
+    <string name="sign_in">לא מחובר</string>
+    <string name="sign_out">לא מחובר</string>
 </resources>
