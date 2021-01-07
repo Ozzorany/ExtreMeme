@@ -35,45 +35,24 @@ public class MyMemesFragment extends Fragment {
         memesRv.setAdapter(adapter);
         adapter.isEditAvailable = true;
 
-        MemeModel.instance.getMemesByUserId("1234", new MemeModel.GetMemesByUserListener() {
-            @Override
-            public void onComplete(List<Meme> result) {
-                data = result;
-                adapter.data = data;
-                adapter.notifyDataSetChanged();
+        // TODO: use real logged in user oz - and prevent reaching this page when not logged in
+        MemeModel.instance.getMemesByUserId("1234", result -> {
+            data = result;
+            adapter.data = data;
+            adapter.notifyDataSetChanged();
 
-                adapter.setOnClickListener(new MyMemesAdapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(int position) {
-                    }
-                });
+            adapter.setOnClickListener(position -> {
+            });
 
-                adapter.setOnRemoveListener(new MyMemesAdapter.OnMemeRemoveListener() {
-                    @Override
-                    public void onItemRemove(Meme meme) {
-                        alBuilder.setTitle("INFO").setMessage("Are you sure you want to delete the meme?").setPositiveButton("yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                MemeModel.instance.removeMeme(meme.getId(), new MemeModel.RemoveMemeListener() {
-                                    @Override
-                                    public void onComplete(Void result) {
-                                        adapter.data.remove(meme);
-                                        adapter.notifyDataSetChanged();
-                                        dialogInterface.dismiss();
-                                    }
-                                });
-                            }
-                        }).setNegativeButton("no", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        });
+            adapter.setOnRemoveListener(meme -> {
+                alBuilder.setTitle("INFO").setMessage("Are you sure you want to delete the meme?").setPositiveButton("yes", (dialogInterface, i) -> MemeModel.instance.removeMeme(meme.getId(), result1 -> {
+                    adapter.data.remove(meme);
+                    adapter.notifyDataSetChanged();
+                    dialogInterface.dismiss();
+                })).setNegativeButton("no", (dialogInterface, i) -> dialogInterface.dismiss());
 
-                        alBuilder.show();
-                    }
-                });
-            }
+                alBuilder.show();
+            });
         });
 
         return view;
