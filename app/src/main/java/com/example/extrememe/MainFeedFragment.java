@@ -1,13 +1,21 @@
 package com.example.extrememe;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,12 +25,19 @@ import com.example.extrememe.model.Category;
 import com.example.extrememe.model.Meme;
 import com.example.extrememe.model.meme.MemeModel;
 import com.example.extrememe.services.CategoryService;
+import com.example.extrememe.services.LoginService;
 import com.example.extrememe.utils.LayoutUnitUtils;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainFeedFragment extends Fragment {
+    private static final String TAG = "MainFeedFragment";
+
     private final int SELECTED_CATEGORY = Color.MAGENTA;
     private final int UNSELECTED_CATEGORY = Color.GRAY;
 
@@ -31,12 +46,16 @@ public class MainFeedFragment extends Fragment {
     private List<Category> categories = new ArrayList<>();
     private List<String> selectedCategories = new ArrayList<>();
     private MyMemesAdapter adapter;
+    private MenuItem signOutButton;
+    private MenuItem signInButton;
+    private MenuItem loggedInUsername;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_feed, container, false);
 
+        setHasOptionsMenu(true);
 
         RecyclerView memesRv = view.findViewById(R.id.allMemes_rv);
         memesRv.setHasFixedSize(true);
@@ -52,6 +71,7 @@ public class MainFeedFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        AlertDialog.Builder alBuilder = new AlertDialog.Builder(this.getContext());
 
         new CategoryService().getMemeCategories(categories -> {
             this.categories = categories;
@@ -62,18 +82,53 @@ public class MainFeedFragment extends Fragment {
             this.initRandomButton();
         });
 
-        MemeModel.instance.getAllMemes(new MemeModel.GetAllMemesListener() {
-            @Override
-            public void onComplete(List<Meme> result) {
-                allMemes = result;
-                filterMemes();
-            }
+        MemeModel.instance.getAllMemes(result -> {
+            allMemes = result;
+            filterMemes();
+
+            adapter.setOnClickListener(position -> {
+                if (LoginService.getInstance(MainFeedFragment.super.getContext()).isLoggedIn()) {
+                    alBuilder.setTitle("SUCCESS").setMessage("TODO: submit a like :)");
+                } else {
+                    alBuilder.setTitle("FAILED").setMessage("Please log in to like memes :)");
+                }
+                alBuilder.show();
+            });
+
+            adapter.setOnRemoveListener(meme -> {
+            });
         });
+
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.main_feed_menu, menu);
+        loggedInUsername = menu.findItem(R.id.logged_in_display_name);
+        signInButton = menu.findItem(R.id.google_sign_in_button);
+        signOutButton = menu.findItem(R.id.google_sign_out_button);
+
+        if (LoginService.getInstance(this.getContext()).isLoggedIn()) {
+            setSignedInView(LoginService.getInstance(this.getContext()).getGoogleAccount().getDisplayName(), true);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.google_sign_in_button:
+                signIn();
+                return true;
+            case R.id.google_sign_out_button:
+                signOut();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void initRandomButton() {
-        View v = getView().findViewById(R.id.random_button);
-        ((Button) v).setOnClickListener(randomButton -> {
+        getView().findViewById(R.id.random_button).setOnClickListener(randomButton -> {
             for (String selectedCategoryId : selectedCategories) {
                 getView().findViewWithTag(selectedCategoryId).setBackgroundColor(UNSELECTED_CATEGORY);
             }
@@ -102,7 +157,7 @@ public class MainFeedFragment extends Fragment {
         }
 
         this.adapter.data = filteredMemes;
-        adapter.notifyDataSetChanged();
+        this.adapter.notifyDataSetChanged();
     }
 
     private void addCategoryButtonToView(Category category) {
@@ -117,7 +172,7 @@ public class MainFeedFragment extends Fragment {
         myButton.setHeight(LayoutUnitUtils.getInstance()
                 .convertPixelToDpUnit(categoryButtonHeight, getResources().getDisplayMetrics()));
 
-        LinearLayout ll = (LinearLayout) getView().findViewById(R.id.categoriesPanel);
+        LinearLayout ll = getView().findViewById(R.id.categoriesPanel);
         int marginInDP = LayoutUnitUtils.getInstance()
                 .convertPixelToDpUnit(margin, getResources().getDisplayMetrics());
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -134,6 +189,32 @@ public class MainFeedFragment extends Fragment {
             this.selectCategory((Button) v);
             this.filterMemes();
         };
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == LoginService.RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                LoginService.getInstance(this.getContext()).setGoogleAccount(account);
+                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getDisplayName());
+                LoginService.getInstance(this.getContext()).firebaseAuthWithGoogle(account.getIdToken(), this.getActivity());
+                setSignedInView(account.getDisplayName(), true);
+            } catch (ApiException e) {
+                Log.w(TAG, "Google sign in failed", e);
+            } catch (NullPointerException e) {
+                Log.w(TAG, "Null pointer exception while login trial", e);
+            }
+        }
+    }
+
+    private void setSignedInView(String displayName, boolean isLoggedIn) {
+        this.loggedInUsername.setTitle(displayName);
+        this.signInButton.setVisible(!isLoggedIn);
+        this.signOutButton.setVisible(isLoggedIn);
     }
 
     private void selectCategory(Button button) {
@@ -157,7 +238,16 @@ public class MainFeedFragment extends Fragment {
     }
 
     private void unselectRandomButton(int unselectedButtonColor) {
-        View v = getView().findViewById(R.id.random_button);
-        ((Button) v).setBackgroundColor(unselectedButtonColor);
+        getView().findViewById(R.id.random_button).setBackgroundColor(unselectedButtonColor);
+    }
+
+    private void signIn() {
+        Intent signInIntent = LoginService.getInstance(this.getContext()).getGoogleSignInClient().getSignInIntent();
+        startActivityForResult(signInIntent, LoginService.RC_SIGN_IN);
+    }
+
+    private void signOut() {
+        LoginService.getInstance(this.getContext()).signOut();
+        setSignedInView(this.getString(R.string.default_sign_in_name_display), false);
     }
 }
