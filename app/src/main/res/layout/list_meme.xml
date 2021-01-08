@@ -29,6 +29,7 @@
         android:layout_height="318dp"
         android:layout_marginBottom="164dp"
         android:background="#FBC435"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toTopOf="@+id/listrow_text_v"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -42,10 +43,11 @@
         android:layout_height="179dp"
         android:background="#DCD8D8"
         android:text="TextView"
+        android:gravity="center"
         android:textAlignment="center"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/listrow_image_v" />
 
