@@ -31,16 +31,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainFeedFragment extends Fragment {
     private static final String TAG = "MainFeedFragment";
-
     private final int SELECTED_CATEGORY = Color.MAGENTA;
     private final int UNSELECTED_CATEGORY = Color.GRAY;
-
     private List<Meme> allMemes = new ArrayList<>();
     private List<Meme> filteredMemes = new ArrayList<>();
     private List<Category> categories = new ArrayList<>();
@@ -49,6 +48,7 @@ public class MainFeedFragment extends Fragment {
     private MenuItem signOutButton;
     private MenuItem signInButton;
     private MenuItem loggedInUsername;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,6 +64,8 @@ public class MainFeedFragment extends Fragment {
 
         adapter = new MyMemesAdapter(getLayoutInflater());
         memesRv.setAdapter(adapter);
+
+        bottomNavigationView = (BottomNavigationView) ((MainActivity)this.getContext()).findViewById(R.id.bottomNavigationView);
 
         return view;
     }
@@ -203,6 +205,7 @@ public class MainFeedFragment extends Fragment {
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.getDisplayName());
                 LoginService.getInstance(this.getContext()).firebaseAuthWithGoogle(account.getIdToken(), this.getActivity());
                 setSignedInView(account.getDisplayName(), true);
+                bottomNavigationView.getMenu().findItem(R.id.myMemesFragment).setEnabled(true);
             } catch (ApiException e) {
                 Log.w(TAG, "Google sign in failed", e);
             } catch (NullPointerException e) {
@@ -249,5 +252,6 @@ public class MainFeedFragment extends Fragment {
     private void signOut() {
         LoginService.getInstance(this.getContext()).signOut();
         setSignedInView(this.getString(R.string.default_sign_in_name_display), false);
+        bottomNavigationView.getMenu().findItem(R.id.myMemesFragment).setEnabled(false);
     }
 }
