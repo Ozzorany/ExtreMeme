@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.extrememe.MyMemesFragmentDirections;
 import com.example.extrememe.R;
 import com.example.extrememe.model.Meme;
+import com.squareup.picasso.Picasso;
 
 
 public class MyMemesViewHolder extends RecyclerView.ViewHolder {
@@ -55,6 +56,10 @@ public class MyMemesViewHolder extends RecyclerView.ViewHolder {
         currentMeme = meme;
         memeDescription.setText(meme.getDescription());
         memeLikes.setText(meme.getUsersLikes() != null ? meme.getUsersLikes().size() + "" : "");
+        memeImage.setImageResource(R.drawable.ic_baseline_image_24);
+        if (meme.getImageUrl() != null){
+            Picasso.get().load(meme.getImageUrl()).placeholder(R.drawable.ic_baseline_image_24).into(memeImage);
+        }
         this.position = position;
     }
 }

@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.extrememe.model.Meme;
 import com.example.extrememe.model.meme.MemeModel;
+import com.squareup.picasso.Picasso;
 
 public class EditMemeFragment extends Fragment {
 
@@ -37,6 +38,10 @@ public class EditMemeFragment extends Fragment {
         AlertDialog.Builder alBuilder = new AlertDialog.Builder(view.getContext());
 
         memeDescription.setText(meme.getDescription());
+        memeImage.setImageResource(R.drawable.ic_baseline_image_24);
+        if (meme.getImageUrl() != null){
+            Picasso.get().load(meme.getImageUrl()).placeholder(R.drawable.ic_baseline_image_24).into(memeImage);
+        }
 
         memeDescription.addTextChangedListener(new TextWatcher() {
             @Override
