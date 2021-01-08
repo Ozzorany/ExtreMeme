@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.extrememe.adapters.MyMemesAdapter;
 import com.example.extrememe.model.Meme;
 import com.example.extrememe.model.meme.MemeModel;
+import com.example.extrememe.services.LoginService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +35,7 @@ public class MyMemesFragment extends Fragment {
         memesRv.setAdapter(adapter);
         adapter.isEditAvailable = true;
 
-        // TODO: use real logged in user oz - and prevent reaching this page when not logged in
-        MemeModel.instance.getMemesByUserId("1234", result -> {
+        MemeModel.instance.getMemesByUserId(LoginService.getInstance(this.getContext()).getFirebaseUser().getUid(), result -> {
             data = result;
             adapter.data = data;
             adapter.notifyDataSetChanged();
