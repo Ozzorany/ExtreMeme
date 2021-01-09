@@ -12,22 +12,28 @@ import com.example.extrememe.model.Meme;
 
 import java.util.List;
 
-public class MyMemesAdapter extends RecyclerView.Adapter<MyMemesViewHolder>{
+public class MemesAdapter extends RecyclerView.Adapter<MyMemesViewHolder>{
     public List<Meme> data;
     public boolean isEditAvailable;
     LayoutInflater inflater;
     private OnItemClickListener onItemClickListener;
     private OnMemeRemoveListener onRemoveListener;
+    private OnMemeLikeListener onMemeLikeListener;
 
-    public MyMemesAdapter(LayoutInflater inflater){
+    public MemesAdapter(LayoutInflater inflater){
         this.inflater = inflater;
     }
 
-    public interface OnItemClickListener{
+    public interface OnItemClickListener {
         void onItemClick(int position);
     }
-    public interface OnMemeRemoveListener{
+
+    public interface OnMemeRemoveListener {
         void onItemRemove(Meme meme);
+    }
+
+    public interface OnMemeLikeListener {
+        boolean onLikeMeme(Meme meme);
     }
 
     public void setOnClickListener(OnItemClickListener listener){
@@ -38,6 +44,10 @@ public class MyMemesAdapter extends RecyclerView.Adapter<MyMemesViewHolder>{
         this.onRemoveListener = onRemoveListener;
     }
 
+    public void setOnMemeLikeListener(OnMemeLikeListener onMemeLikeListener) {
+        this.onMemeLikeListener = onMemeLikeListener;
+    }
+
     @NonNull
     @Override
     public MyMemesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -45,6 +55,7 @@ public class MyMemesAdapter extends RecyclerView.Adapter<MyMemesViewHolder>{
         MyMemesViewHolder holder = new MyMemesViewHolder(view, this.isEditAvailable);
         holder.onItemClickListener = onItemClickListener;
         holder.onMemeRemoveListener = onRemoveListener;
+        holder.onMemeLikeListener = onMemeLikeListener;
         return holder;
     }
 

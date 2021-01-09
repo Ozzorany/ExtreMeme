@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.extrememe.adapters.MyMemesAdapter;
+import com.example.extrememe.adapters.MemesAdapter;
 import com.example.extrememe.model.Meme;
 import com.example.extrememe.model.meme.MemeModel;
 import com.example.extrememe.services.LoginService;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class MyMemesFragment extends Fragment {
     List<Meme> data = new ArrayList<>();
-    MyMemesAdapter adapter;
+    MemesAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -31,17 +31,19 @@ public class MyMemesFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         memesRv.setLayoutManager(layoutManager);
         AlertDialog.Builder alBuilder = new AlertDialog.Builder(view.getContext());
-        adapter = new MyMemesAdapter(getLayoutInflater());
+        adapter = new MemesAdapter(getLayoutInflater());
         memesRv.setAdapter(adapter);
         adapter.isEditAvailable = true;
 
-        MemeModel.instance.getMemesByUserId(LoginService.getInstance(this.getContext()).getFirebaseUser().getUid(), result -> {
+        MemeModel.instance.getMemesByUserId("8ChuebAhu8fSmZitKOvc65vvjDD2", result -> {
             data = result;
             adapter.data = data;
             adapter.notifyDataSetChanged();
 
             adapter.setOnClickListener(position -> {
             });
+
+            adapter.setOnMemeLikeListener((meme) -> true);
 
             adapter.setOnRemoveListener(meme -> {
                 alBuilder.setTitle("INFO").setMessage("Are you sure you want to delete the meme?").setPositiveButton("yes", (dialogInterface, i) -> MemeModel.instance.removeMeme(meme.getId(), result1 -> {
