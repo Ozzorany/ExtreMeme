@@ -16,7 +16,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
     NavController navController;
-    Context context = this;
     public BottomNavigationView bottomNav;
 
     @Override
@@ -32,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNav = findViewById(R.id.bottomNavigationView);
         NavigationUI.setupWithNavController(bottomNav, navController);
 
-        if (!LoginService.getInstance(context).isLoggedIn()) {
+        if (!LoginService.getInstance(this).isLoggedIn()) {
             bottomNav.getMenu().findItem(R.id.myMemesFragment).setEnabled(false);
         }
 
