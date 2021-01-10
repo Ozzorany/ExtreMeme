@@ -35,7 +35,7 @@ public class MyMemesFragment extends Fragment {
         memesRv.setAdapter(adapter);
         adapter.isEditAvailable = true;
 
-        MemeModel.instance.getMemesByUserId("8ChuebAhu8fSmZitKOvc65vvjDD2", result -> {
+        MemeModel.instance.getMemesByUserId(LoginService.getInstance(this.getContext()).getFirebaseUser().getUid(), result -> {
             data = result;
             adapter.data = data;
             adapter.notifyDataSetChanged();
