@@ -36,6 +36,10 @@ public class MemeModel {
         memeModelFirebase.updateMeme(meme, listener);
     }
 
+    public void insertMeme(Meme meme, UpdateMemeListener listener) {
+        memeModelFirebase.insertMeme(meme, listener);
+    }
+
     public interface RemoveMemeListener extends Listener<Void> {
     }
 

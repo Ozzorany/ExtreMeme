@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.extrememe.model.Meme;
 import com.example.extrememe.services.DatabaseDataLoader;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,13 @@ public class MemeModelFirebase {
                 .update("description", meme.getDescription())
                 .addOnSuccessListener(listener::onComplete)
                 .addOnFailureListener(e -> Log.w(TAG, "Error updating document", e));
+    }
+
+    public void insertMeme(Meme meme, final MemeModel.UpdateMemeListener listener) {
+        DatabaseDataLoader.getDB().collection("memes").document(meme.getId())
+                .set(meme, SetOptions.merge())
+                .addOnSuccessListener(listener::onComplete)
+                .addOnFailureListener(e -> Log.w(TAG, "Error inserting document", e));
     }
 
     public void removeMeme(String memeId, MemeModel.RemoveMemeListener listener) {

@@ -58,19 +58,13 @@ public class EditMemeFragment extends Fragment {
             }
         });
 
-        saveBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                memeDescription.clearFocus();
+        saveBtn.setOnClickListener(button -> {
+            memeDescription.clearFocus();
 
-                MemeModel.instance.updateMeme(meme, new MemeModel.UpdateMemeListener() {
-                    @Override
-                    public void onComplete(Void result) {
-                        alBuilder.setTitle("SUCCESS").setMessage("Meme changes were saved");
-                        alBuilder.show();
-                    }
-                });
-            }
+            MemeModel.instance.updateMeme(meme, result -> {
+                alBuilder.setTitle("SUCCESS").setMessage("Meme changes were saved");
+                alBuilder.show();
+            });
         });
 
         return view;
