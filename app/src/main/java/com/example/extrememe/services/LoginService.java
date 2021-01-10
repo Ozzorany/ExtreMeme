@@ -2,7 +2,6 @@ package com.example.extrememe.services;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 
 import com.example.extrememe.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -98,5 +97,9 @@ public class LoginService {
 
     public boolean isLoggedIn() {
         return getGoogleAccount() != null && getFirebaseUser() != null;
+    }
+
+    public String getUserDisplayName() {
+        return this.googleAccount != null ? this.googleAccount.getDisplayName() : "לא מחובר";
     }
 }

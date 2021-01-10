@@ -1,6 +1,5 @@
 package com.example.extrememe;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -11,7 +10,6 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.extrememe.services.LoginService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,10 +28,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = navHostFragment.getNavController();
         bottomNav = findViewById(R.id.bottomNavigationView);
         NavigationUI.setupWithNavController(bottomNav, navController);
-
-        if (!LoginService.getInstance(this).isLoggedIn()) {
-            bottomNav.getMenu().findItem(R.id.myMemesFragment).setEnabled(false);
-        }
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> getSupportActionBar().setTitle(destination.getLabel()));
     }
