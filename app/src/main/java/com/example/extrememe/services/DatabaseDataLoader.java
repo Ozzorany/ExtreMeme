@@ -17,8 +17,4 @@ public class DatabaseDataLoader {
 
         return fireStoreDB;
     }
-
-    public static StorageReference getStorageRef(String url) {
-        return FirebaseStorage.getInstance().getReferenceFromUrl(url);
-    }
 }
