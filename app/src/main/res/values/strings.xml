@@ -5,4 +5,9 @@
     <string name="default_sign_in_name_display">לא מחובר</string>
     <string name="sign_in">לא מחובר</string>
     <string name="sign_out">לא מחובר</string>
+    <string name="random_category">Random</string>
+    <string name="meme_description_hint">Meme Description</string>
+    <string name="choose_meme_button_label">Choose Meme</string>
+    <string name="select_categories">Select Categories</string>
+    <string name="upload_button_label">Upload</string>
 </resources>
