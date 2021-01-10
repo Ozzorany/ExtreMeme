@@ -20,7 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.extrememe.adapters.MyMemesAdapter;
+import com.example.extrememe.adapters.MemesAdapter;
 import com.example.extrememe.model.Category;
 import com.example.extrememe.model.Meme;
 import com.example.extrememe.model.meme.MemeModel;
@@ -42,9 +42,8 @@ public class MainFeedFragment extends Fragment {
     private final int UNSELECTED_CATEGORY = Color.GRAY;
     private List<Meme> allMemes = new ArrayList<>();
     private List<Meme> filteredMemes = new ArrayList<>();
-    private List<Category> categories = new ArrayList<>();
     private List<String> selectedCategories = new ArrayList<>();
-    private MyMemesAdapter adapter;
+    private MemesAdapter adapter;
     private MenuItem signOutButton;
     private MenuItem signInButton;
     private MenuItem loggedInUsername;
@@ -62,10 +61,10 @@ public class MainFeedFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         memesRv.setLayoutManager(layoutManager);
 
-        adapter = new MyMemesAdapter(getLayoutInflater());
+        adapter = new MemesAdapter(getLayoutInflater());
         memesRv.setAdapter(adapter);
 
-        bottomNavigationView = (BottomNavigationView) ((MainActivity)this.getContext()).findViewById(R.id.bottomNavigationView);
+        bottomNavigationView = ((MainActivity) this.getContext()).findViewById(R.id.bottomNavigationView);
 
         return view;
     }
@@ -76,8 +75,6 @@ public class MainFeedFragment extends Fragment {
         AlertDialog.Builder alBuilder = new AlertDialog.Builder(this.getContext());
 
         new CategoryService().getMemeCategories(categories -> {
-            this.categories = categories;
-
             for (Category category : categories) {
                 this.addCategoryButtonToView(category);
             }
@@ -88,13 +85,18 @@ public class MainFeedFragment extends Fragment {
             allMemes = result;
             filterMemes();
 
-            adapter.setOnClickListener(position -> {
+            adapter.setOnClickListener((position) -> {
+            });
+
+            adapter.setOnMemeLikeListener((meme) -> {
                 if (LoginService.getInstance(MainFeedFragment.super.getContext()).isLoggedIn()) {
                     alBuilder.setTitle("SUCCESS").setMessage("TODO: submit a like :)");
                 } else {
                     alBuilder.setTitle("FAILED").setMessage("Please log in to like memes :)");
                 }
                 alBuilder.show();
+
+                return true;
             });
 
             adapter.setOnRemoveListener(meme -> {
@@ -141,17 +143,24 @@ public class MainFeedFragment extends Fragment {
 
     private void filterMemes() {
         this.filteredMemes.clear();
+        boolean isMemeDisplayed;
 
         if (selectedCategories != null && selectedCategories.size() > 0) {
             for (Meme meme : allMemes) {
+                isMemeDisplayed = false;
+
                 if (meme.getCategories() != null) {
                     for (String categoryId : meme.getCategories()) {
                         for (String selectedCategoryId : selectedCategories) {
                             if (selectedCategoryId.equals(categoryId)) {
-                                this.filteredMemes.add(meme);
+                                isMemeDisplayed = true;
                             }
                         }
                     }
+                }
+
+                if (isMemeDisplayed) {
+                    this.filteredMemes.add(meme);
                 }
             }
         } else {
@@ -203,7 +212,18 @@ public class MainFeedFragment extends Fragment {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 LoginService.getInstance(this.getContext()).setGoogleAccount(account);
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.getDisplayName());
-                LoginService.getInstance(this.getContext()).firebaseAuthWithGoogle(account.getIdToken(), this.getActivity());
+                LoginService.getInstance(this.getContext()).firebaseAuthWithGoogle(account.getIdToken(), this.getActivity())
+                        .addOnCompleteListener(this.getActivity(), firebaseLoginRes -> {
+                            if (firebaseLoginRes.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d(TAG, "signInWithCredential:success");
+                                setSignedInView(LoginService.getInstance(this.getContext()).getGoogleAccount().getDisplayName(), true);
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Log.w(TAG, "signInWithCredential:failure", firebaseLoginRes.getException());
+                            }
+                        });
+
                 setSignedInView(account.getDisplayName(), true);
                 bottomNavigationView.getMenu().findItem(R.id.myMemesFragment).setEnabled(true);
             } catch (ApiException e) {

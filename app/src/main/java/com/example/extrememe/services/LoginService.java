@@ -9,7 +9,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -48,14 +50,9 @@ public class LoginService {
         return googleAccount;
     }
 
-    private FirebaseUser firebaseUser;
 
     public FirebaseUser getFirebaseUser() {
-        return firebaseUser;
-    }
-
-    public void setFirebaseUser(FirebaseUser firebaseUser) {
-        this.firebaseUser = firebaseUser;
+        return getFirebaseAuth().getCurrentUser();
     }
 
     private LoginService() {
@@ -89,24 +86,13 @@ public class LoginService {
         return loginService;
     }
 
-    public void firebaseAuthWithGoogle(String idToken, Activity activity) {
+    public Task<AuthResult> firebaseAuthWithGoogle(String idToken, Activity activity) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        loginService.getFirebaseAuth().signInWithCredential(credential)
-                .addOnCompleteListener(activity, task -> {
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithCredential:success");
-                        loginService.setFirebaseUser(loginService.getFirebaseAuth().getCurrentUser());
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInWithCredential:failure", task.getException());
-                    }
-                });
+        return loginService.getFirebaseAuth().signInWithCredential(credential);
     }
 
     public void signOut() {
         FirebaseAuth.getInstance().signOut();
-        loginService.setFirebaseUser(null);
         loginService.setGoogleAccount(null);
     }
 
