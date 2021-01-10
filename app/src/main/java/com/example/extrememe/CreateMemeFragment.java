@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.example.extrememe.model.Meme;
 import com.example.extrememe.model.meme.MemeModel;
@@ -137,6 +138,7 @@ public class CreateMemeFragment extends Fragment {
             res.getResult().getMetadata().getReference().getDownloadUrl().addOnCompleteListener(memeURL -> {
                 MemeModel.instance.insertMeme(createMemeObject(memeURL.getResult().toString()), (result) -> {
                     Toast.makeText(CreateMemeFragment.this.getContext(), "Uploaded", Toast.LENGTH_SHORT).show();
+                    Navigation.findNavController(this.getActivity(), R.id.mainactivity_navhost).navigateUp();
                 });
             });
         });
