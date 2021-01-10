@@ -5,4 +5,5 @@
     <string name="default_sign_in_name_display">לא מחובר</string>
     <string name="sign_in">לא מחובר</string>
     <string name="sign_out">לא מחובר</string>
+    <string name="edit">Edit</string>
 </resources>

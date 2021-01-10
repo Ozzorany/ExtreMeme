@@ -15,12 +15,14 @@ import com.squareup.picasso.Picasso;
 
 
 public class MyMemesViewHolder extends RecyclerView.ViewHolder {
-    public MyMemesAdapter.OnItemClickListener onItemClickListener;
-    public MyMemesAdapter.OnMemeRemoveListener onMemeRemoveListener;
+    public MemesAdapter.OnItemClickListener onItemClickListener;
+    public MemesAdapter.OnMemeRemoveListener onMemeRemoveListener;
+    public MemesAdapter.OnMemeLikeListener onMemeLikeListener;
     private boolean isEditAvailable;
     TextView memeDescription;
     TextView memeLikes;
     TextView editMeme;
+    ImageView likeMeme;
     ImageView memeImage;
     ImageView removeMeme;
     Meme currentMeme;
@@ -30,6 +32,7 @@ public class MyMemesViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         memeDescription = itemView.findViewById(R.id.listrow_text_v);
         memeImage = itemView.findViewById(R.id.listrow_image_v);
+        likeMeme = itemView.findViewById(R.id.like_button);
         memeLikes = itemView.findViewById(R.id.likes_text_v);
         editMeme = itemView.findViewById(R.id.listmeme_edit_text_v);
         removeMeme = itemView.findViewById(R.id.listrow_remove_meme);
@@ -40,16 +43,15 @@ public class MyMemesViewHolder extends RecyclerView.ViewHolder {
             removeMeme.setVisibility(View.VISIBLE);
         }
 
-        editMeme.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MyMemesFragmentDirections.ActionMyMemesToEditMeme action = MyMemesFragmentDirections.actionMyMemesToEditMeme(currentMeme);
-                Navigation.findNavController(view).navigate(action);
-            }
+        editMeme.setOnClickListener(view -> {
+            MyMemesFragmentDirections.ActionMyMemesToEditMeme action = MyMemesFragmentDirections.actionMyMemesToEditMeme(currentMeme);
+            Navigation.findNavController(view).navigate(action);
         });
 
         itemView.setOnClickListener(view -> onItemClickListener.onItemClick(position));
         removeMeme.setOnClickListener(view -> onMemeRemoveListener.onItemRemove(currentMeme));
+        memeImage.setOnLongClickListener(view -> onMemeLikeListener.onLikeMeme(currentMeme));
+        likeMeme.setOnClickListener(view -> onMemeLikeListener.onLikeMeme(currentMeme));
     }
 
     public void bindData(Meme meme, int position) {
