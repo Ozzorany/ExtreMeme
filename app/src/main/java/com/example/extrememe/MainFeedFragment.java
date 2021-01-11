@@ -32,6 +32,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.AuthResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -212,17 +213,19 @@ public class MainFeedFragment extends Fragment {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 LoginService.getInstance(this.getContext()).setGoogleAccount(account);
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.getDisplayName());
-                LoginService.getInstance(this.getContext()).firebaseAuthWithGoogle(account.getIdToken(), this.getActivity())
-                        .addOnCompleteListener(this.getActivity(), firebaseLoginRes -> {
-                            if (firebaseLoginRes.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(TAG, "signInWithCredential:success");
-                                setSignedInView(LoginService.getInstance(this.getContext()).getGoogleAccount().getDisplayName(), true);
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(TAG, "signInWithCredential:failure", firebaseLoginRes.getException());
-                            }
-                        });
+                Task<AuthResult> authResultTask = LoginService.getInstance(this.getContext()).firebaseAuthWithGoogle(account.getIdToken(), this.getActivity());
+
+                authResultTask.addOnCompleteListener(this.getActivity(), firebaseLoginRes -> {
+                    if (firebaseLoginRes.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "signInWithCredential:success");
+                        setSignedInView(LoginService.getInstance(this.getContext()).getGoogleAccount().getDisplayName(), true);
+                        LoginService.getInstance(this.getContext()).createNewUser(authResultTask);
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "signInWithCredential:failure", firebaseLoginRes.getException());
+                    }
+                });
 
                 setSignedInView(account.getDisplayName(), true);
                 bottomNavigationView.getMenu().findItem(R.id.myMemesFragment).setEnabled(true);
