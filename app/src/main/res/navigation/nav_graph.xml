@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_myMemes_to_editMeme"
             app:destination="@id/editMemeFragment" />
+        <action
+            android:id="@+id/action_myMemes_to_createMeme"
+            app:destination="@id/createMemeFragment" />
     </fragment>
     <fragment
         android:id="@+id/createMemeFragment"
