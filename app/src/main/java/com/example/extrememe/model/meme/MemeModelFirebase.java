@@ -50,7 +50,8 @@ public class MemeModelFirebase {
 
     public void updateMeme(Meme meme, final MemeModel.UpdateMemeListener listener) {
         DatabaseDataLoader.getDB().collection("memes").document(meme.getId())
-                .update("description", meme.getDescription())
+                .update("description", meme.getDescription(),
+                        "usersLikes", meme.getUsersLikes())
                 .addOnSuccessListener(listener::onComplete)
                 .addOnFailureListener(e -> Log.w(TAG, "Error updating document", e));
     }
