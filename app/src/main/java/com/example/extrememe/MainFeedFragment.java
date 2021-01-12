@@ -12,7 +12,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,6 +51,8 @@ public class MainFeedFragment extends Fragment {
     private MenuItem signInButton;
     private MenuItem loggedInUsername;
     private BottomNavigationView bottomNavigationView;
+    private TextView noMemesFilteredText;
+    private ImageView noMemesFilteredImage;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,6 +70,9 @@ public class MainFeedFragment extends Fragment {
         memesRv.setAdapter(adapter);
 
         bottomNavigationView = ((MainActivity) this.getContext()).findViewById(R.id.bottomNavigationView);
+        this.noMemesFilteredImage = view.findViewById(R.id.mainfeed_iv_not_found);
+        this.noMemesFilteredText = view.findViewById(R.id.mainfeed_tv_not_found);
+
 
         return view;
     }
@@ -170,6 +177,18 @@ public class MainFeedFragment extends Fragment {
 
         this.adapter.data = filteredMemes;
         this.adapter.notifyDataSetChanged();
+        handleNoFilteredMemes(filteredMemes);
+    }
+
+    private void handleNoFilteredMemes(List<Meme> filteredMemes){
+        if(filteredMemes.isEmpty())
+        {
+            this.noMemesFilteredText.setVisibility(View.VISIBLE);
+            this.noMemesFilteredImage.setVisibility(View.VISIBLE);
+        } else {
+            this.noMemesFilteredText.setVisibility(View.INVISIBLE);
+            this.noMemesFilteredImage.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void addCategoryButtonToView(Category category) {
