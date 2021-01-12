@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -91,11 +92,11 @@ public class MainFeedFragment extends Fragment {
 
             adapter.setOnMemeLikeListener((meme) -> {
                 if (LoginService.getInstance(MainFeedFragment.super.getContext()).isLoggedIn()) {
-                    alBuilder.setTitle("SUCCESS").setMessage("TODO: submit a like :)");
+                    likeMeme(meme);
                 } else {
                     alBuilder.setTitle("FAILED").setMessage("Please log in to like memes :)");
+                    alBuilder.show();
                 }
-                alBuilder.show();
 
                 return true;
             });
@@ -105,6 +106,28 @@ public class MainFeedFragment extends Fragment {
         });
 
     }
+
+    private void likeMeme(Meme meme){
+        String userId = LoginService.getInstance(this.getContext()).getFirebaseUser().getUid();
+        ImageView imageView = getView().findViewById(R.id.like_button);
+
+        if (!meme.getUsersLikes().contains(userId)) {
+            meme.getUsersLikes().add(userId);
+            imageView.setImageResource(R.drawable.ic_baseline_full_favorite_24);
+        }
+        else {
+            meme.getUsersLikes().remove(userId);
+            imageView.setImageResource(R.drawable.ic_baseline_favorite_border_24);
+        }
+
+        MemeModel.instance.updateMeme(meme, new MemeModel.UpdateMemeListener() {
+            @Override
+            public void onComplete(Void result) {
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
@@ -220,6 +243,7 @@ public class MainFeedFragment extends Fragment {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "signInWithCredential:success");
                         setSignedInView(LoginService.getInstance(this.getContext()).getGoogleAccount().getDisplayName(), true);
+                        adapter.notifyDataSetChanged();
                         LoginService.getInstance(this.getContext()).createNewUser(authResultTask);
                     } else {
                         // If sign in fails, display a message to the user.
@@ -276,5 +300,6 @@ public class MainFeedFragment extends Fragment {
         LoginService.getInstance(this.getContext()).signOut();
         setSignedInView(this.getString(R.string.default_sign_in_name_display), false);
         bottomNavigationView.getMenu().findItem(R.id.myMemesFragment).setEnabled(false);
+        adapter.notifyDataSetChanged();
     }
 }
