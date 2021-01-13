@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.example.extrememe.R;
+import com.example.extrememe.model.User;
+import com.example.extrememe.model.user.UserModel;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -98,8 +100,20 @@ public class LoginService {
     public boolean isLoggedIn() {
         return getGoogleAccount() != null && getFirebaseUser() != null;
     }
-
+  
     public String getUserDisplayName() {
         return this.googleAccount != null ? this.googleAccount.getDisplayName() : "לא מחובר";
+    }
+  
+    public void createNewUser(Task<AuthResult> authResultTask){
+        if(authResultTask.getResult().getAdditionalUserInfo().isNewUser())
+        {
+            User user = new User();
+            user.setId(authResultTask.getResult().getUser().getUid());
+            user.setAdmin(false);
+            user.setUsername(authResultTask.getResult().getUser().getDisplayName());
+
+            UserModel.instance.createUser(user);
+        }
     }
 }
