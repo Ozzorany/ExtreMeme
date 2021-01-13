@@ -18,4 +18,30 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/mymemes_empty_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="Create your first meme!"
+        android:textSize="24sp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.486"
+        app:layout_constraintStart_toStartOf="@+id/mymemes_rv"
+        app:layout_constraintTop_toBottomOf="@+id/mymemes_empty_img" />
+
+    <ImageView
+        android:id="@+id/mymemes_empty_img"
+        android:layout_width="0dp"
+        android:layout_height="137dp"
+        android:layout_marginStart="130dp"
+        android:layout_marginEnd="130dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/mymemes_rv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/mymemes_rv"
+        app:srcCompat="@drawable/ic_baseline_cloud_upload_24" />
 </androidx.constraintlayout.widget.ConstraintLayout>

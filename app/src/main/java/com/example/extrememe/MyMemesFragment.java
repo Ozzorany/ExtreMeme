@@ -8,9 +8,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,6 +29,8 @@ import java.util.List;
 public class MyMemesFragment extends Fragment {
     List<Meme> data = new ArrayList<>();
     MemesAdapter adapter;
+    TextView emptyMemesText;
+    ImageView emptyMemesImage;
 
     private MenuItem signOutButton;
     private MenuItem signInButton;
@@ -42,11 +47,15 @@ public class MyMemesFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         memesRv.setLayoutManager(layoutManager);
         AlertDialog.Builder alBuilder = new AlertDialog.Builder(view.getContext());
+        emptyMemesText = view.findViewById(R.id.mymemes_empty_tv);
+        emptyMemesImage = view.findViewById(R.id.mymemes_empty_img);
+
         adapter = new MemesAdapter(getLayoutInflater());
         memesRv.setAdapter(adapter);
         adapter.isEditAvailable = true;
 
         MemeModel.instance.getMemesByUserId(LoginService.getInstance(this.getContext()).getFirebaseUser().getUid(), result -> {
+            handleEmptyMemes(result);
             data = result;
             adapter.data = data;
             adapter.notifyDataSetChanged();
@@ -61,13 +70,29 @@ public class MyMemesFragment extends Fragment {
                     adapter.data.remove(meme);
                     adapter.notifyDataSetChanged();
                     dialogInterface.dismiss();
+                    handleEmptyMemes(adapter.data);
                 })).setNegativeButton("no", (dialogInterface, i) -> dialogInterface.dismiss());
 
                 alBuilder.show();
             });
         });
 
+        emptyMemesImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavDirections action = MyMemesFragmentDirections.actionMyMemesToCreateMeme();
+                Navigation.findNavController(view).navigate(action);
+            }
+        });
+
         return view;
+    }
+
+    private void handleEmptyMemes(List<Meme> memes){
+        if (memes.isEmpty()) {
+            emptyMemesImage.setVisibility(View.VISIBLE);
+            emptyMemesText.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
