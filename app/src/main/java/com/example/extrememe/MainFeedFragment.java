@@ -53,8 +53,6 @@ public class MainFeedFragment extends Fragment {
     private BottomNavigationView bottomNavigationView;
     private TextView noMemesFilteredText;
     private ImageView noMemesFilteredImage;
-    private MenuItem myMemesMenuItem;
-    private MenuItem createMemeMenuItem;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,7 +68,7 @@ public class MainFeedFragment extends Fragment {
 
         adapter = new MemesAdapter(getLayoutInflater());
         memesRv.setAdapter(adapter);
-  
+
         this.noMemesFilteredImage = view.findViewById(R.id.mainfeed_iv_not_found);
         this.noMemesFilteredText = view.findViewById(R.id.mainfeed_tv_not_found);
 
@@ -81,9 +79,6 @@ public class MainFeedFragment extends Fragment {
 
     private void initBottomNavigationView() {
         bottomNavigationView = ((MainActivity) this.getContext()).findViewById(R.id.bottomNavigationView);
-
-        this.myMemesMenuItem = bottomNavigationView.getMenu().findItem(R.id.myMemesFragment);
-        this.createMemeMenuItem = bottomNavigationView.getMenu().findItem(R.id.createMemeFragment);
     }
 
     @Override
@@ -122,15 +117,14 @@ public class MainFeedFragment extends Fragment {
 
     }
 
-    private void likeMeme(Meme meme){
+    private void likeMeme(Meme meme) {
         String userId = LoginService.getInstance(this.getContext()).getFirebaseUser().getUid();
         ImageView imageView = getView().findViewById(R.id.like_button);
 
         if (!meme.getUsersLikes().contains(userId)) {
             meme.getUsersLikes().add(userId);
             imageView.setImageResource(R.drawable.ic_baseline_full_favorite_24);
-        }
-        else {
+        } else {
             meme.getUsersLikes().remove(userId);
             imageView.setImageResource(R.drawable.ic_baseline_favorite_border_24);
         }
@@ -214,9 +208,8 @@ public class MainFeedFragment extends Fragment {
         handleNoFilteredMemes(filteredMemes);
     }
 
-    private void handleNoFilteredMemes(List<Meme> filteredMemes){
-        if(filteredMemes.isEmpty())
-        {
+    private void handleNoFilteredMemes(List<Meme> filteredMemes) {
+        if (filteredMemes.isEmpty()) {
             this.noMemesFilteredText.setVisibility(View.VISIBLE);
             this.noMemesFilteredImage.setVisibility(View.VISIBLE);
         } else {
@@ -294,8 +287,6 @@ public class MainFeedFragment extends Fragment {
         this.loggedInUsername.setTitle(displayName);
         this.signInButton.setVisible(!isLoggedIn);
         this.signOutButton.setVisible(isLoggedIn);
-        this.myMemesMenuItem.setEnabled(isLoggedIn);
-        this.createMemeMenuItem.setEnabled(isLoggedIn);
     }
 
     private void selectCategory(Button button) {
@@ -330,7 +321,6 @@ public class MainFeedFragment extends Fragment {
     private void signOut() {
         LoginService.getInstance(this.getContext()).signOut();
         setSignedInView(this.getString(R.string.default_sign_in_name_display), false);
-        bottomNavigationView.getMenu().findItem(R.id.myMemesFragment).setEnabled(false);
         adapter.notifyDataSetChanged();
     }
 }
