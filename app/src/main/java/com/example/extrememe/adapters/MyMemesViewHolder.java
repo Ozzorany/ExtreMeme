@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.extrememe.MyMemesFragmentDirections;
 import com.example.extrememe.R;
 import com.example.extrememe.model.Meme;
+import com.example.extrememe.services.LoginService;
 import com.squareup.picasso.Picasso;
 
 
@@ -59,9 +60,24 @@ public class MyMemesViewHolder extends RecyclerView.ViewHolder {
         memeDescription.setText(meme.getDescription());
         memeLikes.setText(meme.getUsersLikes() != null ? meme.getUsersLikes().size() + "" : "");
         memeImage.setImageResource(R.drawable.ic_baseline_image_24);
-        if (meme.getImageUrl() != null){
+        this.position = position;
+
+        if (meme.getImageUrl() != null) {
             Picasso.get().load(meme.getImageUrl()).placeholder(R.drawable.ic_baseline_image_24).into(memeImage);
         }
-        this.position = position;
+
+        setLikeMemeIcon(meme);
+    }
+
+    private void setLikeMemeIcon(Meme meme) {
+        if (LoginService.getInstance(itemView.getContext()).getFirebaseUser() != null) {
+            if (meme.getUsersLikes().contains(LoginService.getInstance(itemView.getContext()).getFirebaseUser().getUid())) {
+                likeMeme.setImageResource(R.drawable.ic_baseline_full_favorite_24);
+            } else {
+                likeMeme.setImageResource(R.drawable.ic_baseline_favorite_border_24);
+            }
+        } else {
+            likeMeme.setImageResource(R.drawable.ic_baseline_favorite_border_24);
+        }
     }
 }
