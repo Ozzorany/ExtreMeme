@@ -80,10 +80,10 @@ public class MainFeedFragment extends Fragment {
     }
 
     private void initBottomNavigationView() {
-        bottomNav = ((MainActivity) this.getContext()).findViewById(R.id.bottomNavigationView);
+        bottomNavigationView = ((MainActivity) this.getContext()).findViewById(R.id.bottomNavigationView);
 
-        this.myMemesMenuItem = bottomNav.getMenu().findItem(R.id.myMemesFragment);
-        this.createMemeMenuItem = bottomNav.getMenu().findItem(R.id.createMemeFragment);
+        this.myMemesMenuItem = bottomNavigationView.getMenu().findItem(R.id.myMemesFragment);
+        this.createMemeMenuItem = bottomNavigationView.getMenu().findItem(R.id.createMemeFragment);
     }
 
     @Override
