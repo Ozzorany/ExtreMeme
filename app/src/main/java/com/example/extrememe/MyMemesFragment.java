@@ -54,28 +54,31 @@ public class MyMemesFragment extends Fragment {
         memesRv.setAdapter(adapter);
         adapter.isEditAvailable = true;
 
-        MemeModel.instance.getMemesByUserId(LoginService.getInstance(this.getContext()).getFirebaseUser().getUid(), result -> {
-            handleEmptyMemes(result);
-            data = result;
-            adapter.data = data;
-            adapter.notifyDataSetChanged();
+        if (LoginService.getInstance(this.getContext()).getFirebaseUser() != null) {
+            MemeModel.instance.getMemesByUserId(LoginService.getInstance(this.getContext()).getFirebaseUser().getUid(), result -> {
+                handleEmptyMemes(result);
+                data = result;
+                adapter.data = data;
+                adapter.notifyDataSetChanged();
 
-            adapter.setOnClickListener(position -> {
+                adapter.setOnClickListener(position -> {
+                });
+
+                adapter.setOnMemeLikeListener((meme) -> true);
+
+                adapter.setOnRemoveListener(meme -> {
+                    alBuilder.setTitle("INFO").setMessage("Are you sure you want to delete the meme?").setPositiveButton("yes", (dialogInterface, i) -> MemeModel.instance.removeMeme(meme.getId(), result1 -> {
+                        adapter.data.remove(meme);
+                        adapter.notifyDataSetChanged();
+                        dialogInterface.dismiss();
+                        handleEmptyMemes(adapter.data);
+                    })).setNegativeButton("no", (dialogInterface, i) -> dialogInterface.dismiss());
+
+                    alBuilder.show();
+                });
             });
+        }
 
-            adapter.setOnMemeLikeListener((meme) -> true);
-
-            adapter.setOnRemoveListener(meme -> {
-                alBuilder.setTitle("INFO").setMessage("Are you sure you want to delete the meme?").setPositiveButton("yes", (dialogInterface, i) -> MemeModel.instance.removeMeme(meme.getId(), result1 -> {
-                    adapter.data.remove(meme);
-                    adapter.notifyDataSetChanged();
-                    dialogInterface.dismiss();
-                    handleEmptyMemes(adapter.data);
-                })).setNegativeButton("no", (dialogInterface, i) -> dialogInterface.dismiss());
-
-                alBuilder.show();
-            });
-        });
 
         emptyMemesImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,7 +91,7 @@ public class MyMemesFragment extends Fragment {
         return view;
     }
 
-    private void handleEmptyMemes(List<Meme> memes){
+    private void handleEmptyMemes(List<Meme> memes) {
         if (memes.isEmpty()) {
             emptyMemesImage.setVisibility(View.VISIBLE);
             emptyMemesText.setVisibility(View.VISIBLE);
