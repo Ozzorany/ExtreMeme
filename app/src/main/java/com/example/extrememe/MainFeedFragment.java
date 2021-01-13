@@ -53,6 +53,8 @@ public class MainFeedFragment extends Fragment {
     private BottomNavigationView bottomNavigationView;
     private TextView noMemesFilteredText;
     private ImageView noMemesFilteredImage;
+    private MenuItem myMemesMenuItem;
+    private MenuItem createMemeMenuItem;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,13 +70,20 @@ public class MainFeedFragment extends Fragment {
 
         adapter = new MemesAdapter(getLayoutInflater());
         memesRv.setAdapter(adapter);
-
-        bottomNavigationView = ((MainActivity) this.getContext()).findViewById(R.id.bottomNavigationView);
+  
         this.noMemesFilteredImage = view.findViewById(R.id.mainfeed_iv_not_found);
         this.noMemesFilteredText = view.findViewById(R.id.mainfeed_tv_not_found);
 
+        initBottomNavigationView();
 
         return view;
+    }
+
+    private void initBottomNavigationView() {
+        bottomNav = ((MainActivity) this.getContext()).findViewById(R.id.bottomNavigationView);
+
+        this.myMemesMenuItem = bottomNav.getMenu().findItem(R.id.myMemesFragment);
+        this.createMemeMenuItem = bottomNav.getMenu().findItem(R.id.createMemeFragment);
     }
 
     @Override
@@ -115,14 +124,17 @@ public class MainFeedFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.main_feed_menu, menu);
+        inflater.inflate(R.menu.user_top_menu, menu);
         loggedInUsername = menu.findItem(R.id.logged_in_display_name);
         signInButton = menu.findItem(R.id.google_sign_in_button);
         signOutButton = menu.findItem(R.id.google_sign_out_button);
 
-        if (LoginService.getInstance(this.getContext()).isLoggedIn()) {
-            setSignedInView(LoginService.getInstance(this.getContext()).getGoogleAccount().getDisplayName(), true);
+        if (LoginService.getInstance(this.getContext()).getGoogleAccount() != null && !LoginService.getInstance(this.getContext()).isLoggedIn()) {
+            LoginService.getInstance(this.getContext()).signOut();
         }
+
+        setSignedInView(LoginService.getInstance(this.getContext()).getUserDisplayName(),
+                LoginService.getInstance(this.getContext()).isLoggedIn());
     }
 
     @Override
@@ -247,7 +259,6 @@ public class MainFeedFragment extends Fragment {
                 });
 
                 setSignedInView(account.getDisplayName(), true);
-                bottomNavigationView.getMenu().findItem(R.id.myMemesFragment).setEnabled(true);
             } catch (ApiException e) {
                 Log.w(TAG, "Google sign in failed", e);
             } catch (NullPointerException e) {
@@ -260,6 +271,8 @@ public class MainFeedFragment extends Fragment {
         this.loggedInUsername.setTitle(displayName);
         this.signInButton.setVisible(!isLoggedIn);
         this.signOutButton.setVisible(isLoggedIn);
+        this.myMemesMenuItem.setEnabled(isLoggedIn);
+        this.createMemeMenuItem.setEnabled(isLoggedIn);
     }
 
     private void selectCategory(Button button) {
@@ -294,6 +307,6 @@ public class MainFeedFragment extends Fragment {
     private void signOut() {
         LoginService.getInstance(this.getContext()).signOut();
         setSignedInView(this.getString(R.string.default_sign_in_name_display), false);
-        bottomNavigationView.getMenu().findItem(R.id.myMemesFragment).setEnabled(false);
+        bottomNav.getMenu().findItem(R.id.myMemesFragment).setEnabled(false);
     }
 }

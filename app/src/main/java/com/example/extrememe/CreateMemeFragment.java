@@ -7,6 +7,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -45,9 +48,17 @@ public class CreateMemeFragment extends Fragment {
 
     private final int PICK_IMAGE_REQUEST = 71;
 
+
+    private MenuItem signOutButton;
+    private MenuItem signInButton;
+    private MenuItem loggedInUsername;
+
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fragment_create_meme, container, false);
     }
 
@@ -141,6 +152,32 @@ public class CreateMemeFragment extends Fragment {
                     Navigation.findNavController(this.getActivity(), R.id.mainactivity_navhost).navigateUp();
                 });
             });
+        });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.user_top_menu, menu);
+        loggedInUsername = menu.findItem(R.id.logged_in_display_name);
+        signInButton = menu.findItem(R.id.google_sign_in_button);
+        signOutButton = menu.findItem(R.id.google_sign_out_button);
+
+        if (LoginService.getInstance(this.getContext()).isLoggedIn()) {
+            setSignedInView(LoginService.getInstance(this.getContext()).getGoogleAccount().getDisplayName());
+        } else {
+            Navigation.findNavController(this.getActivity(), R.id.mainactivity_navhost).navigateUp();
+        }
+    }
+
+    private void setSignedInView(String displayName) {
+        this.loggedInUsername.setTitle(displayName);
+        this.signInButton.setVisible(false);
+        this.signOutButton.setVisible(true);
+        this.signOutButton.setOnMenuItemClickListener((listener) -> {
+            LoginService.getInstance(this.getContext()).signOut();
+            Navigation.findNavController(this.getActivity(), R.id.mainactivity_navhost).navigateUp();
+
+            return false;
         });
     }
 }

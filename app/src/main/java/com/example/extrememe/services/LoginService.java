@@ -100,7 +100,11 @@ public class LoginService {
     public boolean isLoggedIn() {
         return getGoogleAccount() != null && getFirebaseUser() != null;
     }
-
+  
+    public String getUserDisplayName() {
+        return this.googleAccount != null ? this.googleAccount.getDisplayName() : "לא מחובר";
+    }
+  
     public void createNewUser(Task<AuthResult> authResultTask){
         if(authResultTask.getResult().getAdditionalUserInfo().isNewUser())
         {
