@@ -5,15 +5,17 @@ import android.util.Log;
 import com.example.extrememe.model.Meme;
 import com.example.extrememe.services.DatabaseDataLoader;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MemeModelFirebase {
     private static final String TAG = "MemesService";
 
-    public void getAllMemes(final MemeModel.GetAllMemesListener listener) {
+    public void getAllMemes(Long lastUpdated, final MemeModel.GetAllMemesListener listener) {
+        //TODO: LAST UPDATE
+
         List<Meme> list = new ArrayList<>();
 
         DatabaseDataLoader.getDB().collection("memes")
@@ -37,6 +39,7 @@ public class MemeModelFirebase {
 
         DatabaseDataLoader.getDB().collection("memes")
                 .whereEqualTo("userId", userId)
+                .whereGreaterThan("lastUpdated",new Date(lastUpdated))
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -53,23 +56,12 @@ public class MemeModelFirebase {
     }
 
     public void updateMeme(Meme meme, final MemeModel.UpdateMemeListener listener) {
-//        DatabaseDataLoader.getDB().collection("memes").document(meme.getId())
-//                .update("description", meme.getDescription(),
-//                        "usersLikes", meme.getUsersLikes())
-//                .addOnSuccessListener(listener::onComplete)
-//                .addOnFailureListener(e -> Log.w(TAG, "Error updating document", e));
         DatabaseDataLoader.getDB().collection("memes").document(meme.getId())
                 .set(meme.toMap())
                 .addOnSuccessListener(listener::onComplete)
                 .addOnFailureListener(e -> Log.w(TAG, "Error inserting document", e));
     }
 
-//    public void insertMeme(Meme meme, final MemeModel.UpdateMemeListener listener) {
-//        DatabaseDataLoader.getDB().collection("memes").document(meme.getId())
-//                .set(meme, SetOptions.merge())
-//                .addOnSuccessListener(listener::onComplete)
-//                .addOnFailureListener(e -> Log.w(TAG, "Error inserting document", e));
-//    }
 
     public void insertMeme(Meme meme, final MemeModel.UpdateMemeListener listener) {
         DatabaseDataLoader.getDB().collection("memes").document(meme.getId())
