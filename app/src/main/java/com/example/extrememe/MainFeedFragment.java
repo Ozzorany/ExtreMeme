@@ -123,8 +123,10 @@ public class MainFeedFragment extends Fragment {
         MemeModel.instance.refreshAllMemes(new MemeModel.GetMemesByUserListener() {
             @Override
             public void onComplete(List<Meme> result) {
-                allMemes = result;
-                filterMemes();
+                if(result.size() > 0){
+                    allMemes = result;
+                    filterMemes();
+                }
             }
         });
 
