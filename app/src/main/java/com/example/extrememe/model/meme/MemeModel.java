@@ -3,7 +3,7 @@ package com.example.extrememe.model.meme;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData;
 
 import com.example.extrememe.MemesApplication;
 import com.example.extrememe.model.Meme;
@@ -14,7 +14,8 @@ import java.util.List;
 public class MemeModel {
     public final static MemeModel instance = new MemeModel();
     MemeModelFirebase memeModelFirebase = new MemeModelFirebase();
-    MutableLiveData<List<Meme>> memes;
+    LiveData<List<Meme>> memes;
+    LiveData<List<Meme>> myMemes;
     MemeModelSql memeModelSql = new MemeModelSql();
 
 
@@ -28,19 +29,54 @@ public class MemeModel {
     public interface GetAllMemesListener extends Listener<List<Meme>> {
     }
 
-    public void getAllMemes(GetAllMemesListener listener) {
-        memeModelFirebase.getAllMemes(listener);
+    public LiveData<List<Meme>> getAllMemes() {
+        if(memes == null){
+            memes = memeModelSql.getAllMemes();
+        }
+
+        return memes;
+    }
+
+    public void refreshAllMemes(final Listener listener){
+        SharedPreferences sharedPreferences = MemesApplication.context.getSharedPreferences("TAG", Context.MODE_PRIVATE);
+        Long lastUpdated = sharedPreferences.getLong("lastUpdated", 0);
+
+        memeModelFirebase.getAllMemes(lastUpdated, new GetAllMemesListener() {
+            @Override
+            public void onComplete(List<Meme> result) {
+                Long lastUpdated = 0L;
+
+                for (Meme meme: result) {
+                    memeModelSql.addMeme(meme);
+
+                    if(meme.getLastUpdated() > lastUpdated)
+                    {
+                        lastUpdated = meme.getLastUpdated();
+                    }
+                }
+
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putLong("lastUpdated", lastUpdated);
+                editor.commit();
+
+                if(listener != null){
+                    listener.onComplete(result);
+                }
+
+                //memes.setValue(result);
+            }
+        });
     }
 
     public interface GetMemesByUserListener extends Listener<List<Meme>> {
     }
 
-    public MutableLiveData<List<Meme>> getMemesByUserId(String userId) {
-        if(memes == null){
-            memes = memeModelSql.getMemesByUserId(userId);
+    public LiveData<List<Meme>> getMemesByUserId(String userId) {
+        if(myMemes == null){
+            myMemes = memeModelSql.getMemesByUserId(userId);
         }
 
-        return memes;
+        return myMemes;
     }
 
     public void refreshAllMyMemes(String userId, final Listener listener){
@@ -53,7 +89,7 @@ public class MemeModel {
                 Long lastUpdated = 0L;
 
                 for (Meme meme: result) {
-                    memeModelSql.addMeme(meme, null);
+                    memeModelSql.addMeme(meme);
 
                     if(meme.getLastUpdated() > lastUpdated)
                     {
@@ -63,9 +99,12 @@ public class MemeModel {
 
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putLong("lastUpdated", lastUpdated);
-                editor.commit();
+                editor.apply();
 
-                memes.setValue(result);
+                //memes.setValue(result);
+                if(listener != null){
+                    listener.onComplete(myMemes.getValue());
+                }
             }
         });
     }
