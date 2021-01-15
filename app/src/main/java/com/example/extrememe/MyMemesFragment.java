@@ -97,7 +97,9 @@ public class MyMemesFragment extends Fragment {
         MemeModel.instance.refreshAllMyMemes(userId,  new MemeModel.GetMemesByUserListener() {
             @Override
             public void onComplete(List<Meme> result) {
-                //TODO: SHIT
+                handleEmptyMemes(result);
+                adapter.data = result;
+                adapter.notifyDataSetChanged();
             }
         });
 
