@@ -4,6 +4,7 @@ public class User {
     String id;
     String username;
     boolean isAdmin;
+    Double lastUpdated;
 
     public String getId() {
         return id;
@@ -27,5 +28,13 @@ public class User {
 
     public void setAdmin(boolean admin) {
         isAdmin = admin;
+    }
+
+    public Double getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Double lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 }
