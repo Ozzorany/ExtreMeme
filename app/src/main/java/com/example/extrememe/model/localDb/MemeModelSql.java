@@ -2,59 +2,38 @@ package com.example.extrememe.model.localDb;
 
 import android.os.AsyncTask;
 
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData;
 
 import com.example.extrememe.model.Meme;
-import com.example.extrememe.model.meme.MemeModel;
 
 import java.util.List;
 
 public class MemeModelSql {
-    public void getAllMemes(final MemeModel.GetAllMemesListener listener){
-        class MyAsyncTask extends AsyncTask {
-            List<Meme> data;
-            @Override
-            protected Object doInBackground(Object[] objects) {
-                data = AppLocalDb.db.memeDao().getAllMemes();
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
-                listener.onComplete(data);
-            }
-        }
-        MyAsyncTask task = new MyAsyncTask();
-        task.execute();
+    public LiveData<List<Meme>> getAllMemes() {
+        return AppLocalDb.db.memeDao().getAllMemes();
     }
 
-    public MutableLiveData<List<Meme>> getMemesByUserId(String userId){
+    public LiveData<List<Meme>> getMemesByUserId(String userId) {
         return AppLocalDb.db.memeDao().getAllMemesByUserId(userId);
     }
 
-    public void addMeme(final Meme meme, final MemeModel.UpdateMemeListener listener){
-        class MyAsyncTask extends AsyncTask {
-            @Override
-            protected Object doInBackground(Object[] objects) {
-                AppLocalDb.db.memeDao().insertAll(meme);
-                return null;
-            }
+    public void addMeme(Meme meme) {
+        new InsertMemeAsyncTask(AppLocalDb.db.memeDao()).execute(meme);
+    }
 
-            @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
-                if (listener != null){
-                    listener.onComplete(null);
-                }
-            }
-        };
-        MyAsyncTask task = new MyAsyncTask();
-        task.execute();
+    private static class InsertMemeAsyncTask extends AsyncTask<Meme, Void, Void> {
+        private MemeDao memeDao;
+
+        private InsertMemeAsyncTask(MemeDao memeDao) {
+            this.memeDao = memeDao;
+        }
+
+        @Override
+        protected Void doInBackground(Meme... memes) {
+            memeDao.insertAll(memes[0]);
+            return null;
+        }
     }
 }
+
+
