@@ -1,6 +1,6 @@
 package com.example.extrememe.model.localDb;
 
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -15,10 +15,10 @@ import java.util.List;
 public interface MemeDao {
 
     @Query("select * from Meme")
-    List<Meme> getAllMemes();
+    LiveData<List<Meme>> getAllMemes();
 
     @Query("select * from Meme where userId = :userId")
-    MutableLiveData<List<Meme>> getAllMemesByUserId(String userId);
+    LiveData<List<Meme>> getAllMemesByUserId(String userId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(Meme... memes);
