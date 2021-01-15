@@ -14,11 +14,10 @@ public class MemeModelFirebase {
     private static final String TAG = "MemesService";
 
     public void getAllMemes(Long lastUpdated, final MemeModel.GetAllMemesListener listener) {
-        //TODO: LAST UPDATE
-
         List<Meme> list = new ArrayList<>();
 
         DatabaseDataLoader.getDB().collection("memes")
+                .whereGreaterThan("lastUpdated",new Date(lastUpdated))
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
