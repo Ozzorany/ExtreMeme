@@ -116,7 +116,9 @@ public class CreateMemeFragment extends Fragment {
 
         randomButton.setOnClickListener(button -> this.selectCategory((Button) button));
 
-        this.selectButtonView(this.randomButton);
+        if(this.selectedCategories != null && this.selectedCategories.size() == 0) {
+            this.selectButtonView(this.randomButton);
+        }
     }
 
     private void chooseImage() {

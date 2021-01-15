@@ -169,7 +169,9 @@ public class MainFeedFragment extends Fragment {
             this.filterMemes();
         });
 
-        this.selectButtonView(this.randomButton);
+        if(this.selectedCategories != null && this.selectedCategories.size() == 0) {
+            this.selectButtonView(this.randomButton);
+        }
     }
 
     private void unselectAllCategories() {
