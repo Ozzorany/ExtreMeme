@@ -21,7 +21,9 @@ public class MemeModelFirebase {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            list.add(document.toObject(Meme.class));
+                            Meme meme = new Meme();
+                            meme.fromMap(document.getData());
+                            list.add(meme);
                         }
                         listener.onComplete(list);
                     } else {
@@ -30,7 +32,7 @@ public class MemeModelFirebase {
                 });
     }
 
-    public void getMemesByUserId(String userId, final MemeModel.GetMemesByUserListener listener) {
+    public void getMemesByUserId(String userId, Long lastUpdated, final MemeModel.GetMemesByUserListener listener) {
         List<Meme> list = new ArrayList<>();
 
         DatabaseDataLoader.getDB().collection("memes")
@@ -39,7 +41,9 @@ public class MemeModelFirebase {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            list.add(document.toObject(Meme.class));
+                            Meme meme = new Meme();
+                            meme.fromMap(document.getData());
+                            list.add(meme);
                         }
                         listener.onComplete(list);
                     } else {
@@ -49,16 +53,27 @@ public class MemeModelFirebase {
     }
 
     public void updateMeme(Meme meme, final MemeModel.UpdateMemeListener listener) {
+//        DatabaseDataLoader.getDB().collection("memes").document(meme.getId())
+//                .update("description", meme.getDescription(),
+//                        "usersLikes", meme.getUsersLikes())
+//                .addOnSuccessListener(listener::onComplete)
+//                .addOnFailureListener(e -> Log.w(TAG, "Error updating document", e));
         DatabaseDataLoader.getDB().collection("memes").document(meme.getId())
-                .update("description", meme.getDescription(),
-                        "usersLikes", meme.getUsersLikes())
+                .set(meme.toMap())
                 .addOnSuccessListener(listener::onComplete)
-                .addOnFailureListener(e -> Log.w(TAG, "Error updating document", e));
+                .addOnFailureListener(e -> Log.w(TAG, "Error inserting document", e));
     }
+
+//    public void insertMeme(Meme meme, final MemeModel.UpdateMemeListener listener) {
+//        DatabaseDataLoader.getDB().collection("memes").document(meme.getId())
+//                .set(meme, SetOptions.merge())
+//                .addOnSuccessListener(listener::onComplete)
+//                .addOnFailureListener(e -> Log.w(TAG, "Error inserting document", e));
+//    }
 
     public void insertMeme(Meme meme, final MemeModel.UpdateMemeListener listener) {
         DatabaseDataLoader.getDB().collection("memes").document(meme.getId())
-                .set(meme, SetOptions.merge())
+                .set(meme.toMap())
                 .addOnSuccessListener(listener::onComplete)
                 .addOnFailureListener(e -> Log.w(TAG, "Error inserting document", e));
     }
