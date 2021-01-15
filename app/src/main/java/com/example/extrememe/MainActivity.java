@@ -35,31 +35,28 @@ public class MainActivity extends AppCompatActivity {
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> getSupportActionBar().setTitle(destination.getLabel()));
 
-        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                boolean isUserLoggedIn = LoginService.getInstance(context).isLoggedIn();
+        bottomNav.setOnNavigationItemSelectedListener(item -> {
+            boolean isUserLoggedIn = LoginService.getInstance(context).isLoggedIn();
 
-                switch (item.getItemId()) {
-                    case R.id.myMemesFragment:
-                        if (isUserLoggedIn) {
-                            Navigation.findNavController(MainActivity.this, R.id.mainactivity_navhost).navigate(R.id.myMemesFragment);
-                            return true;
-                        }
-                        return false;
-                    case R.id.createMemeFragment:
-                        if (isUserLoggedIn) {
-                            Navigation.findNavController(MainActivity.this, R.id.mainactivity_navhost).navigate(R.id.createMemeFragment);
-                            return true;
-                        }
-                        return false;
-                    case R.id.mainFeedFragment:
-                        Navigation.findNavController(MainActivity.this, R.id.mainactivity_navhost).navigate(R.id.mainFeedFragment);
+            switch (item.getItemId()) {
+                case R.id.myMemesFragment:
+                    if (isUserLoggedIn) {
+                        Navigation.findNavController(MainActivity.this, R.id.mainactivity_navhost).navigate(R.id.myMemesFragment);
                         return true;
-                }
-
-                return true;
+                    }
+                    return false;
+                case R.id.createMemeFragment:
+                    if (isUserLoggedIn) {
+                        Navigation.findNavController(MainActivity.this, R.id.mainactivity_navhost).navigate(R.id.createMemeFragment);
+                        return true;
+                    }
+                    return false;
+                case R.id.mainFeedFragment:
+                    Navigation.findNavController(MainActivity.this, R.id.mainactivity_navhost).navigate(R.id.mainFeedFragment);
+                    return true;
             }
+
+            return true;
         });
     }
 

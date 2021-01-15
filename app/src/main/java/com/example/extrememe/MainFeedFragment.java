@@ -119,13 +119,10 @@ public class MainFeedFragment extends Fragment {
     }
 
     private void reloadData() {
-        MemeModel.instance.refreshAllMemes(new MemeModel.GetMemesByUserListener() {
-            @Override
-            public void onComplete(List<Meme> result) {
-                if (result.size() > 0) {
-                    allMemes = result;
-                    filterMemes();
-                }
+        MemeModel.instance.refreshAllMemes((MemeModel.GetMemesByUserListener) result -> {
+            if (result.size() > 0) {
+                allMemes = result;
+                filterMemes();
             }
         });
 
@@ -177,15 +174,17 @@ public class MainFeedFragment extends Fragment {
     }
 
     private void initRandomButton() {
-        this.randomButton = getView().findViewById(R.id.random_button_main);
+        if (getView() != null) {
+            this.randomButton = getView().findViewById(R.id.random_button_main);
 
-        randomButton.setOnClickListener(button -> {
-            this.selectCategory((Button)button);
-            this.filterMemes();
-        });
+            randomButton.setOnClickListener(button -> {
+                this.selectCategory((Button) button);
+                this.filterMemes();
+            });
 
-        if(this.selectedCategories != null && this.selectedCategories.size() == 0) {
-            this.selectButtonView(this.randomButton);
+            if (this.selectedCategories != null && this.selectedCategories.size() == 0) {
+                this.selectButtonView(this.randomButton);
+            }
         }
     }
 
@@ -237,12 +236,14 @@ public class MainFeedFragment extends Fragment {
     }
 
     private void addCategoryButtonToView(Category category) {
-        Button categoryButton = new CategoryViewUtils()
-                .generateCategoryButton(category, this.getContext(), getResources(),
-                        getView().findViewById(R.id.categories_panel_main));
+        if (getView() != null) {
+            Button categoryButton = new CategoryViewUtils()
+                    .generateCategoryButton(category, this.getContext(), getResources(),
+                            getView().findViewById(R.id.categories_panel_main));
 
-        categoryButton.setOnClickListener(onClickCategory());
-        this.unselectButtonView(categoryButton);
+            categoryButton.setOnClickListener(onClickCategory());
+            this.unselectButtonView(categoryButton);
+        }
     }
 
     private View.OnClickListener onClickCategory() {
@@ -304,7 +305,7 @@ public class MainFeedFragment extends Fragment {
             if (button.getTag().equals(selectedCategoryId)) {
                 this.unselectButtonView(button);
                 selectedCategories.remove(selectedCategoryId);
-                if(selectedCategories.size() == 0) {
+                if (selectedCategories.size() == 0) {
                     this.selectButtonView(this.randomButton);
                 }
                 return;

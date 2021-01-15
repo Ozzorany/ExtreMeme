@@ -80,12 +80,9 @@ public class MyMemesFragment extends Fragment {
         }
 
 
-        emptyMemesImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavDirections action = MyMemesFragmentDirections.actionMyMemesToCreateMeme();
-                Navigation.findNavController(view).navigate(action);
-            }
+        emptyMemesImage.setOnClickListener(view1 -> {
+            NavDirections action = MyMemesFragmentDirections.actionMyMemesToCreateMeme();
+            Navigation.findNavController(view1).navigate(action);
         });
 
         reloadData(LoginService.getInstance(this.getContext()).getFirebaseUser().getUid());
@@ -94,13 +91,10 @@ public class MyMemesFragment extends Fragment {
     }
 
     private void reloadData(String userId){
-        MemeModel.instance.refreshAllMyMemes(userId,  new MemeModel.GetMemesByUserListener() {
-            @Override
-            public void onComplete(List<Meme> result) {
-                handleEmptyMemes(result);
-                adapter.data = result;
-                adapter.notifyDataSetChanged();
-            }
+        MemeModel.instance.refreshAllMyMemes(userId, (MemeModel.GetMemesByUserListener) result -> {
+            handleEmptyMemes(result);
+            adapter.data = result;
+            adapter.notifyDataSetChanged();
         });
 
     }
