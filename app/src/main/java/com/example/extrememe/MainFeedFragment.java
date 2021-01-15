@@ -65,6 +65,7 @@ public class MainFeedFragment extends Fragment {
         setHasOptionsMenu(true);
 
         RecyclerView memesRv = view.findViewById(R.id.allMemes_rv);
+        memesRv.setItemViewCacheSize(3);
         memesRv.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         memesRv.setLayoutManager(layoutManager);
@@ -123,7 +124,7 @@ public class MainFeedFragment extends Fragment {
         MemeModel.instance.refreshAllMemes(new MemeModel.GetMemesByUserListener() {
             @Override
             public void onComplete(List<Meme> result) {
-                if(result.size() > 0){
+                if (result.size() > 0) {
                     allMemes = result;
                     filterMemes();
                 }
@@ -183,13 +184,15 @@ public class MainFeedFragment extends Fragment {
     }
 
     private void initRandomButton() {
-        getView().findViewById(R.id.random_button).setOnClickListener(randomButton -> {
-            for (String selectedCategoryId : selectedCategories) {
-                getView().findViewWithTag(selectedCategoryId).setBackgroundColor(UNSELECTED_CATEGORY);
-            }
-            this.selectCategory((Button) randomButton);
-            this.filterMemes();
-        });
+        if (getView() != null) {
+            getView().findViewById(R.id.random_button).setOnClickListener(randomButton -> {
+                for (String selectedCategoryId : selectedCategories) {
+                    getView().findViewWithTag(selectedCategoryId).setBackgroundColor(UNSELECTED_CATEGORY);
+                }
+                this.selectCategory((Button) randomButton);
+                this.filterMemes();
+            });
+        }
     }
 
     private void filterMemes() {
@@ -245,16 +248,18 @@ public class MainFeedFragment extends Fragment {
         myButton.setHeight(LayoutUnitUtils.getInstance()
                 .convertPixelToDpUnit(categoryButtonHeight, getResources().getDisplayMetrics()));
 
-        LinearLayout ll = getView().findViewById(R.id.categoriesPanel);
-        int marginInDP = LayoutUnitUtils.getInstance()
-                .convertPixelToDpUnit(margin, getResources().getDisplayMetrics());
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        lp.setMargins(marginInDP, marginInDP, marginInDP, marginInDP);
+        if (getView() != null) {
+            LinearLayout ll = getView().findViewById(R.id.categoriesPanel);
+            int marginInDP = LayoutUnitUtils.getInstance()
+                    .convertPixelToDpUnit(margin, getResources().getDisplayMetrics());
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp.setMargins(marginInDP, marginInDP, marginInDP, marginInDP);
 
-        myButton.setOnClickListener(onClickCategory());
+            myButton.setOnClickListener(onClickCategory());
 
-        myButton.setTag(category.getId());
-        ll.addView(myButton, lp);
+            myButton.setTag(category.getId());
+            ll.addView(myButton, lp);
+        }
     }
 
     private View.OnClickListener onClickCategory() {
