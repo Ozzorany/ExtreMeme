@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,8 +27,8 @@ import com.example.extrememe.model.Meme;
 import com.example.extrememe.model.meme.MemeModel;
 import com.example.extrememe.services.CategoryService;
 import com.example.extrememe.services.LoginService;
+import com.example.extrememe.utils.CategoryViewUtils;
 import com.example.extrememe.utils.ColorUtils;
-import com.example.extrememe.utils.LayoutUnitUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.ApiException;
@@ -163,14 +162,16 @@ public class MainFeedFragment extends Fragment {
     }
 
     private void initRandomButton() {
-        this.randomButton = getView().findViewById(R.id.random_button);
+        this.randomButton = getView().findViewById(R.id.random_button_main);
 
         randomButton.setOnClickListener(button -> {
             this.selectCategory((Button)button);
             this.filterMemes();
         });
 
-        this.selectButtonView(this.randomButton);
+        if(this.selectedCategories != null && this.selectedCategories.size() == 0) {
+            this.selectButtonView(this.randomButton);
+        }
     }
 
     private void unselectAllCategories() {
@@ -221,28 +222,12 @@ public class MainFeedFragment extends Fragment {
     }
 
     private void addCategoryButtonToView(Category category) {
-        final int categoryButtonWidth = 110;
-        final int categoryButtonHeight = 50;
-        final int margin = 5;
+        Button categoryButton = new CategoryViewUtils()
+                .generateCategoryButton(category, this.getContext(), getResources(),
+                        getView().findViewById(R.id.categories_panel_main));
 
-        Button myButton = new Button(this.getContext());
-        myButton.setText(category.getName());
-        myButton.setWidth(LayoutUnitUtils.getInstance()
-                .convertPixelToDpUnit(categoryButtonWidth, getResources().getDisplayMetrics()));
-        myButton.setHeight(LayoutUnitUtils.getInstance()
-                .convertPixelToDpUnit(categoryButtonHeight, getResources().getDisplayMetrics()));
-
-        LinearLayout ll = getView().findViewById(R.id.categoriesPanel);
-        int marginInDP = LayoutUnitUtils.getInstance()
-                .convertPixelToDpUnit(margin, getResources().getDisplayMetrics());
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        lp.setMargins(marginInDP, marginInDP, marginInDP, marginInDP);
-
-        myButton.setOnClickListener(onClickCategory());
-
-        myButton.setTag(category.getId());
-        this.unselectButtonView(myButton);
-        ll.addView(myButton, lp);
+        categoryButton.setOnClickListener(onClickCategory());
+        this.unselectButtonView(categoryButton);
     }
 
     private View.OnClickListener onClickCategory() {
@@ -293,7 +278,7 @@ public class MainFeedFragment extends Fragment {
     }
 
     private void selectCategory(Button button) {
-        if (button.getId() == R.id.random_button) {
+        if (button.getId() == R.id.random_button_main) {
             this.selectButtonView(this.randomButton);
             this.unselectAllCategories();
             this.selectedCategories.clear();
@@ -305,7 +290,6 @@ public class MainFeedFragment extends Fragment {
                 this.unselectButtonView(button);
                 selectedCategories.remove(selectedCategoryId);
                 if(selectedCategories.size() == 0) {
-                    button.setTextColor(Color.WHITE);
                     this.selectButtonView(this.randomButton);
                 }
                 return;
