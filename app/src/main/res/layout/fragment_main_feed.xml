@@ -26,9 +26,9 @@
             <Button
                 android:id="@+id/random_button"
                 android:layout_width="110dp"
-                android:layout_height="50dp"
+                android:layout_height="60dp"
                 android:layout_margin="5dp"
-                android:text="Random" />
+                android:text="@string/random_category" />
         </LinearLayout>
     </HorizontalScrollView>
 
