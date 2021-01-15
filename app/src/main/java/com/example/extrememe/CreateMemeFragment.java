@@ -3,6 +3,7 @@ package com.example.extrememe;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -22,9 +23,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.example.extrememe.model.Category;
 import com.example.extrememe.model.Meme;
 import com.example.extrememe.model.meme.MemeModel;
+import com.example.extrememe.services.CategoryService;
 import com.example.extrememe.services.LoginService;
+import com.example.extrememe.utils.CategoryViewUtils;
+import com.example.extrememe.utils.ColorUtils;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -43,6 +48,8 @@ public class CreateMemeFragment extends Fragment {
     private ImageView imageView;
     private EditText memeDescription;
     StorageReference storageReference;
+    private List<String> selectedCategories = new ArrayList<>();
+    private Button randomButton;
 
     private Uri filePath;
 
@@ -52,7 +59,6 @@ public class CreateMemeFragment extends Fragment {
     private MenuItem signOutButton;
     private MenuItem signInButton;
     private MenuItem loggedInUsername;
-
 
 
     @Override
@@ -71,6 +77,7 @@ public class CreateMemeFragment extends Fragment {
     }
 
     private void initializeUI() {
+        this.initRandomButton();
         btnChoose = this.getActivity().findViewById(R.id.choose_image);
         btnUpload = this.getActivity().findViewById(R.id.upload_button);
         imageView = this.getActivity().findViewById(R.id.meme_to_upload);
@@ -78,6 +85,40 @@ public class CreateMemeFragment extends Fragment {
 
         btnChoose.setOnClickListener(v -> chooseImage());
         btnUpload.setOnClickListener(v -> uploadImage());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        new CategoryService().getMemeCategories(categories -> {
+            for (Category category : categories) {
+                this.addCategoryButtonToView(category);
+            }
+            this.initRandomButton();
+        });
+    }
+
+    private void addCategoryButtonToView(Category category) {
+        Button categoryButton = new CategoryViewUtils()
+                .generateCategoryButton(category, this.getContext(), getResources(),
+                        getView().findViewById(R.id.categories_panel_create_meme));
+
+        categoryButton.setOnClickListener(onClickCategory());
+        this.unselectButtonView(categoryButton);
+    }
+
+    private View.OnClickListener onClickCategory() {
+        return v -> this.selectCategory((Button) v);
+    }
+
+    private void initRandomButton() {
+        this.randomButton = getView().findViewById(R.id.random_button_create_meme);
+
+        randomButton.setOnClickListener(button -> this.selectCategory((Button) button));
+
+        if(this.selectedCategories != null && this.selectedCategories.size() == 0) {
+            this.selectButtonView(this.randomButton);
+        }
     }
 
     private void chooseImage() {
@@ -131,17 +172,12 @@ public class CreateMemeFragment extends Fragment {
         Meme uploadedMeme = new Meme();
         uploadedMeme.setId(UUID.randomUUID().toString());
         uploadedMeme.setUserId(LoginService.getInstance(this.getContext()).getFirebaseUser().getUid());
-        uploadedMeme.setCategories(this.getSelectedCategories()); //TODO - really use categories
+        uploadedMeme.setCategories(this.selectedCategories);
         uploadedMeme.setDescription(this.memeDescription.getText().toString());
         uploadedMeme.setImageUrl(memeURL);
         uploadedMeme.setUsersLikes(new ArrayList<>());
-        System.out.println(memeURL);
 
         return uploadedMeme;
-    }
-
-    private List<String> getSelectedCategories() {
-        return null;
     }
 
     private Task<UploadTask.TaskSnapshot> uploadMemeWithPublicURL(Task<UploadTask.TaskSnapshot> taskSnapshot) {
@@ -179,5 +215,45 @@ public class CreateMemeFragment extends Fragment {
 
             return false;
         });
+    }
+
+    private void selectCategory(Button button) {
+        if (button.getId() == R.id.random_button_create_meme) {
+            this.selectButtonView(this.randomButton);
+            this.unselectAllCategories();
+            this.selectedCategories.clear();
+            return;
+        }
+
+        for (String selectedCategoryId : selectedCategories) {
+            if (button.getTag().equals(selectedCategoryId)) {
+                this.unselectButtonView(button);
+                selectedCategories.remove(selectedCategoryId);
+                if (selectedCategories.size() == 0) {
+                    this.selectButtonView(this.randomButton);
+                }
+                return;
+            }
+        }
+
+        selectButtonView(button);
+        unselectButtonView(this.randomButton);
+        selectedCategories.add(button.getTag().toString());
+    }
+
+    private void unselectAllCategories() {
+        for (String selectedCategoryId : selectedCategories) {
+            this.unselectButtonView(getView().findViewWithTag(selectedCategoryId));
+        }
+    }
+
+    private void unselectButtonView(Button button) {
+        button.setTextColor(Color.BLACK);
+        button.setBackgroundColor(ColorUtils.getInstance(getResources()).getColorByResourceId(R.color.unselected_category));
+    }
+
+    private void selectButtonView(Button button) {
+        button.setBackgroundColor(ColorUtils.getInstance(getResources()).getColorByResourceId(R.color.purple_500));
+        button.setTextColor(Color.WHITE);
     }
 }

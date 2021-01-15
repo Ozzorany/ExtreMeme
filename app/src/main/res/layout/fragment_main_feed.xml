@@ -17,18 +17,18 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:id="@+id/categoriesPanel"
+            android:id="@+id/categories_panel_main"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:visibility="visible">
 
             <Button
-                android:id="@+id/random_button"
+                android:id="@+id/random_button_main"
                 android:layout_width="110dp"
-                android:layout_height="50dp"
+                android:layout_height="60dp"
                 android:layout_margin="5dp"
-                android:text="Random" />
+                android:text="@string/random_category" />
         </LinearLayout>
     </HorizontalScrollView>
 

@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,7 +29,8 @@ import com.example.extrememe.model.Meme;
 import com.example.extrememe.model.meme.MemeModel;
 import com.example.extrememe.services.CategoryService;
 import com.example.extrememe.services.LoginService;
-import com.example.extrememe.utils.LayoutUnitUtils;
+import com.example.extrememe.utils.CategoryViewUtils;
+import com.example.extrememe.utils.ColorUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.ApiException;
@@ -43,8 +43,6 @@ import java.util.List;
 
 public class MainFeedFragment extends Fragment {
     private static final String TAG = "MainFeedFragment";
-    private final int SELECTED_CATEGORY = Color.MAGENTA;
-    private final int UNSELECTED_CATEGORY = Color.GRAY;
     private List<Meme> filteredMemes = new ArrayList<>();
     private List<String> selectedCategories = new ArrayList<>();
     private List<Meme> allMemes = new ArrayList<>();
@@ -56,6 +54,7 @@ public class MainFeedFragment extends Fragment {
     private TextView noMemesFilteredText;
     private ImageView noMemesFilteredImage;
     MemesViewModel memesViewModel;
+    private Button randomButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,7 +64,6 @@ public class MainFeedFragment extends Fragment {
         setHasOptionsMenu(true);
 
         RecyclerView memesRv = view.findViewById(R.id.allMemes_rv);
-        memesRv.setItemViewCacheSize(3);
         memesRv.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         memesRv.setLayoutManager(layoutManager);
@@ -145,12 +143,7 @@ public class MainFeedFragment extends Fragment {
             imageView.setImageResource(R.drawable.ic_baseline_favorite_border_24);
         }
 
-        MemeModel.instance.updateMeme(meme, new MemeModel.UpdateMemeListener() {
-            @Override
-            public void onComplete(Void result) {
-                adapter.notifyDataSetChanged();
-            }
-        });
+        MemeModel.instance.updateMeme(meme, result -> adapter.notifyDataSetChanged());
     }
 
 
@@ -184,14 +177,21 @@ public class MainFeedFragment extends Fragment {
     }
 
     private void initRandomButton() {
-        if (getView() != null) {
-            getView().findViewById(R.id.random_button).setOnClickListener(randomButton -> {
-                for (String selectedCategoryId : selectedCategories) {
-                    getView().findViewWithTag(selectedCategoryId).setBackgroundColor(UNSELECTED_CATEGORY);
-                }
-                this.selectCategory((Button) randomButton);
-                this.filterMemes();
-            });
+        this.randomButton = getView().findViewById(R.id.random_button_main);
+
+        randomButton.setOnClickListener(button -> {
+            this.selectCategory((Button)button);
+            this.filterMemes();
+        });
+
+        if(this.selectedCategories != null && this.selectedCategories.size() == 0) {
+            this.selectButtonView(this.randomButton);
+        }
+    }
+
+    private void unselectAllCategories() {
+        for (String selectedCategoryId : selectedCategories) {
+            this.unselectButtonView(getView().findViewWithTag(selectedCategoryId));
         }
     }
 
@@ -237,29 +237,12 @@ public class MainFeedFragment extends Fragment {
     }
 
     private void addCategoryButtonToView(Category category) {
-        final int categoryButtonWidth = 110;
-        final int categoryButtonHeight = 50;
-        final int margin = 5;
+        Button categoryButton = new CategoryViewUtils()
+                .generateCategoryButton(category, this.getContext(), getResources(),
+                        getView().findViewById(R.id.categories_panel_main));
 
-        Button myButton = new Button(this.getContext());
-        myButton.setText(category.getName());
-        myButton.setWidth(LayoutUnitUtils.getInstance()
-                .convertPixelToDpUnit(categoryButtonWidth, getResources().getDisplayMetrics()));
-        myButton.setHeight(LayoutUnitUtils.getInstance()
-                .convertPixelToDpUnit(categoryButtonHeight, getResources().getDisplayMetrics()));
-
-        if (getView() != null) {
-            LinearLayout ll = getView().findViewById(R.id.categoriesPanel);
-            int marginInDP = LayoutUnitUtils.getInstance()
-                    .convertPixelToDpUnit(margin, getResources().getDisplayMetrics());
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(marginInDP, marginInDP, marginInDP, marginInDP);
-
-            myButton.setOnClickListener(onClickCategory());
-
-            myButton.setTag(category.getId());
-            ll.addView(myButton, lp);
-        }
+        categoryButton.setOnClickListener(onClickCategory());
+        this.unselectButtonView(categoryButton);
     }
 
     private View.OnClickListener onClickCategory() {
@@ -310,27 +293,37 @@ public class MainFeedFragment extends Fragment {
     }
 
     private void selectCategory(Button button) {
-        if (button.getText().equals("Random")) {
-            button.setBackgroundColor(SELECTED_CATEGORY);
+        if (button.getId() == R.id.random_button_main) {
+            this.selectButtonView(this.randomButton);
+            this.unselectAllCategories();
             this.selectedCategories.clear();
             return;
         }
 
         for (String selectedCategoryId : selectedCategories) {
             if (button.getTag().equals(selectedCategoryId)) {
-                button.setBackgroundColor(UNSELECTED_CATEGORY);
+                this.unselectButtonView(button);
                 selectedCategories.remove(selectedCategoryId);
+                if(selectedCategories.size() == 0) {
+                    this.selectButtonView(this.randomButton);
+                }
                 return;
             }
         }
 
-        button.setBackgroundColor(SELECTED_CATEGORY);
-        unselectRandomButton(UNSELECTED_CATEGORY);
+        selectButtonView(button);
+        unselectButtonView(this.randomButton);
         selectedCategories.add(button.getTag().toString());
     }
 
-    private void unselectRandomButton(int unselectedButtonColor) {
-        getView().findViewById(R.id.random_button).setBackgroundColor(unselectedButtonColor);
+    private void unselectButtonView(Button button) {
+        button.setTextColor(Color.BLACK);
+        button.setBackgroundColor(ColorUtils.getInstance(getResources()).getColorByResourceId(R.color.unselected_category));
+    }
+
+    private void selectButtonView(Button button) {
+        button.setBackgroundColor(ColorUtils.getInstance(getResources()).getColorByResourceId(R.color.purple_500));
+        button.setTextColor(Color.WHITE);
     }
 
     private void signIn() {
