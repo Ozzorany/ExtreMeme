@@ -6,6 +6,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.example.extrememe.model.Meme;
 
@@ -22,6 +23,9 @@ public interface MemeDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(Meme... memes);
+
+    @Update
+    void updateMemes(Meme... memes);
 
     @Delete
     void delete(Meme meme);

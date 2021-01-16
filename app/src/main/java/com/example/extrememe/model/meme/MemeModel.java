@@ -61,6 +61,7 @@ public class MemeModel {
                 listener.onComplete(result);
             }
 
+            //TODO: CHECK WHAT TO DO WITH THIS IN THE NEXT LESSON
             //memes.setValue(result);
         });
     }
@@ -98,6 +99,7 @@ public class MemeModel {
                 editor.putLong("lastUpdated", lastUpdated);
                 editor.apply();
 
+                //TODO: CHECK WHAT TO DO WITH THIS IN THE NEXT LESSON
                 //memes.setValue(result);
                 if(listener != null){
                     listener.onComplete(myMemes.getValue());
@@ -110,6 +112,7 @@ public class MemeModel {
     }
 
     public void updateMeme(Meme meme, UpdateMemeListener listener) {
+        memeModelSql.updateMeme(meme);
         memeModelFirebase.updateMeme(meme, listener);
     }
 
@@ -120,7 +123,8 @@ public class MemeModel {
     public interface RemoveMemeListener extends Listener<Void> {
     }
 
-    public void removeMeme(String memeId, RemoveMemeListener listener) {
-        memeModelFirebase.removeMeme(memeId, listener);
+    public void removeMeme(Meme meme, RemoveMemeListener listener) {
+        memeModelSql.deleteMeme(meme);
+        memeModelFirebase.removeMeme(meme.getId(), listener);
     }
 }

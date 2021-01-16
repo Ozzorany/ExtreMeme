@@ -66,7 +66,7 @@ public class MyMemesFragment extends Fragment {
                     adapter.setOnMemeLikeListener((meme) -> true);
 
                     adapter.setOnRemoveListener(meme -> {
-                        alBuilder.setTitle("INFO").setMessage("Are you sure you want to delete the meme?").setPositiveButton("yes", (dialogInterface, i) -> MemeModel.instance.removeMeme(meme.getId(), result1 -> {
+                        alBuilder.setTitle("INFO").setMessage("Are you sure you want to delete the meme?").setPositiveButton("yes", (dialogInterface, i) -> MemeModel.instance.removeMeme(meme, result1 -> {
                             adapter.data.remove(meme);
                             adapter.notifyDataSetChanged();
                             dialogInterface.dismiss();
