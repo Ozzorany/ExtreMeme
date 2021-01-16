@@ -8,4 +8,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="app_main_color">#232F34</color>
+    <color name="primary_variant">#1D272B</color>
+    <color name="primary_text_color">#4A6572</color>
 </resources>
