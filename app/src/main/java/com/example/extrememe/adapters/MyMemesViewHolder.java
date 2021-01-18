@@ -49,7 +49,11 @@ public class MyMemesViewHolder extends RecyclerView.ViewHolder {
             Navigation.findNavController(view).navigate(action);
         });
 
-        itemView.setOnClickListener(view -> onItemClickListener.onItemClick(position));
+        itemView.setOnClickListener(view -> {
+            if (onItemClickListener != null) {
+                onItemClickListener.onItemClick(position);
+            }
+        });
         removeMeme.setOnClickListener(view -> onMemeRemoveListener.onItemRemove(currentMeme));
         memeImage.setOnLongClickListener(view -> onMemeLikeListener.onLikeMeme(currentMeme));
         likeMeme.setOnClickListener(view -> onMemeLikeListener.onLikeMeme(currentMeme));

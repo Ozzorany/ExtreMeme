@@ -323,7 +323,7 @@ public class MainFeedFragment extends Fragment {
     }
 
     private void selectButtonView(Button button) {
-        button.setBackgroundColor(ColorUtils.getInstance(getResources()).getColorByResourceId(R.color.purple_500));
+        button.setBackgroundColor(ColorUtils.getInstance(getResources()).getColorByResourceId(R.color.app_main_color));
         button.setTextColor(Color.WHITE);
     }
 

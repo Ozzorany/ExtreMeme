@@ -40,9 +40,9 @@
         android:id="@+id/listrow_text_v"
         android:layout_width="0dp"
         android:layout_height="179dp"
-        android:background="#DCD8D8"
-        android:text="TextView"
+        android:background="#EFE4E4"
         android:gravity="center"
+        android:text="TextView"
         android:textAlignment="center"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -50,20 +50,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/listrow_image_v" />
 
-    <TextView
+    <Button
         android:id="@+id/listmeme_edit_text_v"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="?attr/materialButtonOutlinedStyle"
+        android:layout_width="69dp"
+        android:layout_height="36dp"
         android:layout_marginStart="50dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="5dp"
         android:text="@string/edit"
         android:textStyle="bold"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/likes_text_v"
-        app:layout_constraintTop_toBottomOf="@+id/listrow_text_v" />
+        app:layout_constraintTop_toBottomOf="@+id/listrow_text_v"
+        app:strokeColor="@color/app_main_color" />
 
     <ImageView
         android:id="@+id/listrow_remove_meme"
