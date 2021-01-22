@@ -91,12 +91,8 @@ public class MyMemesFragment extends Fragment {
     }
 
     private void reloadData(String userId){
-        MemeModel.instance.refreshAllMyMemes(userId, (MemeModel.GetMemesByUserListener) result -> {
-            handleEmptyMemes(result);
-            adapter.data = result;
-            adapter.notifyDataSetChanged();
+        MemeModel.instance.refreshAllMyMemes(userId, () -> {
         });
-
     }
 
     private void handleEmptyMemes(List<Meme> memes) {

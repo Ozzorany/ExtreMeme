@@ -96,36 +96,29 @@ public class MainFeedFragment extends Fragment {
             this.initRandomButton();
         });
 
-        memesViewModel.getAllMemes().observe(getViewLifecycleOwner(), new Observer<List<Meme>>() {
-            @Override
-            public void onChanged(List<Meme> memes) {
-                allMemes = memes;
-                filterMemes();
+        memesViewModel.getAllMemes().observe(getViewLifecycleOwner(), memes -> {
+            allMemes = memes;
+            filterMemes();
 
-                adapter.setOnMemeLikeListener((meme) -> {
-                    if (LoginService.getInstance(MainFeedFragment.super.getContext()).isLoggedIn()) {
-                        likeMeme(meme);
-                    } else {
-                        alBuilder.setTitle("FAILED").setMessage("Please log in to like memes :)");
-                        alBuilder.show();
-                    }
+            adapter.setOnMemeLikeListener((meme) -> {
+                if (LoginService.getInstance(MainFeedFragment.super.getContext()).isLoggedIn()) {
+                    likeMeme(meme);
+                } else {
+                    alBuilder.setTitle("FAILED").setMessage("Please log in to like memes :)");
+                    alBuilder.show();
+                }
 
-                    return true;
-                });
-            }
+                return true;
+            });
         });
 
         reloadData();
     }
 
     private void reloadData() {
-        MemeModel.instance.refreshAllMemes((MemeModel.GetMemesByUserListener) result -> {
-            if (result.size() > 0) {
-                allMemes = result;
-                filterMemes();
-            }
-        });
+        MemeModel.instance.refreshAllMemes(() -> {
 
+        });
     }
 
     private void likeMeme(Meme meme) {

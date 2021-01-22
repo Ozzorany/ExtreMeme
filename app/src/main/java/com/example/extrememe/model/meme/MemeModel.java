@@ -26,6 +26,10 @@ public class MemeModel {
         void onComplete(T result);
     }
 
+    public interface RefreshListener{
+        void onComplete();
+    }
+
     public interface GetAllMemesListener extends Listener<List<Meme>> {
     }
 
@@ -37,32 +41,31 @@ public class MemeModel {
         return memes;
     }
 
-    public void refreshAllMemes(final Listener listener){
+    public void refreshAllMemes(final RefreshListener refreshListener){
         SharedPreferences sharedPreferences = MemesApplication.context.getSharedPreferences("TAG", Context.MODE_PRIVATE);
         Long lastUpdated = sharedPreferences.getLong("lastUpdated", 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
 
         memeModelFirebase.getAllMemes(lastUpdated, result -> {
-            Long lastUpdated1 = 0L;
+            Long lastUpdatedTime = 0L;
 
             for (Meme meme: result) {
                 memeModelSql.addMeme(meme);
 
-                if(meme.getLastUpdated() > lastUpdated1)
+                if(meme.getLastUpdated() > lastUpdatedTime)
                 {
-                    lastUpdated1 = meme.getLastUpdated();
+                    lastUpdatedTime = meme.getLastUpdated();
                 }
             }
 
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putLong("lastUpdated", lastUpdated1);
-            editor.commit();
-
-            if(listener != null){
-                listener.onComplete(result);
+            if(lastUpdatedTime != 0) {
+                editor.putLong("lastUpdated", lastUpdatedTime);
+                editor.apply();
             }
 
-            //TODO: CHECK WHAT TO DO WITH THIS IN THE NEXT LESSON
-            //memes.setValue(result);
+            if(refreshListener != null){
+                refreshListener.onComplete();
+            }
         });
     }
 
@@ -77,9 +80,10 @@ public class MemeModel {
         return myMemes;
     }
 
-    public void refreshAllMyMemes(String userId, final Listener listener){
+    public void refreshAllMyMemes(String userId, final RefreshListener refreshListener){
         SharedPreferences sharedPreferences = MemesApplication.context.getSharedPreferences("TAG", Context.MODE_PRIVATE);
         Long lastUpdated = sharedPreferences.getLong("lastUpdated", 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
 
         memeModelFirebase.getMemesByUserId(userId, lastUpdated, new GetMemesByUserListener() {
             @Override
@@ -95,14 +99,13 @@ public class MemeModel {
                     }
                 }
 
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putLong("lastUpdated", lastUpdated);
-                editor.apply();
+                if(lastUpdated != 0) {
+                    editor.putLong("lastUpdated", lastUpdated);
+                    editor.apply();
+                }
 
-                //TODO: CHECK WHAT TO DO WITH THIS IN THE NEXT LESSON
-                //memes.setValue(result);
-                if(listener != null){
-                    listener.onComplete(myMemes.getValue());
+                if(refreshListener != null){
+                    refreshListener.onComplete();
                 }
             }
         });
@@ -117,6 +120,7 @@ public class MemeModel {
     }
 
     public void insertMeme(Meme meme, UpdateMemeListener listener) {
+        memeModelSql.addMeme(meme);
         memeModelFirebase.insertMeme(meme, listener);
     }
 
