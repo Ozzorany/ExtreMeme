@@ -18,10 +18,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.extrememe.adapters.MemesAdapter;
 import com.example.extrememe.model.Category;
@@ -39,6 +39,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.AuthResult;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MainFeedFragment extends Fragment {
@@ -55,6 +56,7 @@ public class MainFeedFragment extends Fragment {
     private ImageView noMemesFilteredImage;
     MemesViewModel memesViewModel;
     private Button randomButton;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,6 +70,7 @@ public class MainFeedFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         memesRv.setLayoutManager(layoutManager);
         memesViewModel = new ViewModelProvider(this).get(MemesViewModel.class);
+        swipeRefreshLayout = view.findViewById(R.id.allmemes_swipe);
 
         adapter = new MemesAdapter(getLayoutInflater());
         memesRv.setAdapter(adapter);
@@ -76,8 +79,13 @@ public class MainFeedFragment extends Fragment {
         this.noMemesFilteredText = view.findViewById(R.id.mainfeed_tv_not_found);
 
         initBottomNavigationView();
+        swipeChanges();
 
         return view;
+    }
+
+    private void swipeChanges() {
+        swipeRefreshLayout.setOnRefreshListener(this::reloadData);
     }
 
     private void initBottomNavigationView() {
@@ -96,36 +104,30 @@ public class MainFeedFragment extends Fragment {
             this.initRandomButton();
         });
 
-        memesViewModel.getAllMemes().observe(getViewLifecycleOwner(), new Observer<List<Meme>>() {
-            @Override
-            public void onChanged(List<Meme> memes) {
-                allMemes = memes;
-                filterMemes();
+        memesViewModel.getAllMemes().observe(getViewLifecycleOwner(), memes -> {
+            Collections.sort(memes, (firstMeme, secondMeme) -> secondMeme.getLastUpdated().compareTo(firstMeme.getLastUpdated()));
+            allMemes = memes;
+            filterMemes();
 
-                adapter.setOnMemeLikeListener((meme) -> {
-                    if (LoginService.getInstance(MainFeedFragment.super.getContext()).isLoggedIn()) {
-                        likeMeme(meme);
-                    } else {
-                        alBuilder.setTitle("FAILED").setMessage("Please log in to like memes :)");
-                        alBuilder.show();
-                    }
+            adapter.setOnMemeLikeListener((meme) -> {
+                if (LoginService.getInstance(MainFeedFragment.super.getContext()).isLoggedIn()) {
+                    likeMeme(meme);
+                } else {
+                    alBuilder.setTitle("FAILED").setMessage("Please log in to like memes :)");
+                    alBuilder.show();
+                }
 
-                    return true;
-                });
-            }
+                return true;
+            });
         });
 
         reloadData();
     }
 
     private void reloadData() {
-        MemeModel.instance.refreshAllMemes((MemeModel.GetMemesByUserListener) result -> {
-            if (result.size() > 0) {
-                allMemes = result;
-                filterMemes();
-            }
+        MemeModel.instance.refreshAllMemes(() -> {
+            swipeRefreshLayout.setRefreshing(false);
         });
-
     }
 
     private void likeMeme(Meme meme) {
