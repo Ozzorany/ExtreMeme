@@ -18,10 +18,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.extrememe.adapters.MemesAdapter;
 import com.example.extrememe.model.Category;
@@ -55,6 +55,7 @@ public class MainFeedFragment extends Fragment {
     private ImageView noMemesFilteredImage;
     MemesViewModel memesViewModel;
     private Button randomButton;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,6 +69,7 @@ public class MainFeedFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         memesRv.setLayoutManager(layoutManager);
         memesViewModel = new ViewModelProvider(this).get(MemesViewModel.class);
+        swipeRefreshLayout = view.findViewById(R.id.allmemes_swipe);
 
         adapter = new MemesAdapter(getLayoutInflater());
         memesRv.setAdapter(adapter);
@@ -76,8 +78,13 @@ public class MainFeedFragment extends Fragment {
         this.noMemesFilteredText = view.findViewById(R.id.mainfeed_tv_not_found);
 
         initBottomNavigationView();
+        swipeChanges();
 
         return view;
+    }
+
+    private void swipeChanges() {
+        swipeRefreshLayout.setOnRefreshListener(this::reloadData);
     }
 
     private void initBottomNavigationView() {
@@ -117,7 +124,7 @@ public class MainFeedFragment extends Fragment {
 
     private void reloadData() {
         MemeModel.instance.refreshAllMemes(() -> {
-
+            swipeRefreshLayout.setRefreshing(false);
         });
     }
 
