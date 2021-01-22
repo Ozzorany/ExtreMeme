@@ -39,6 +39,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.AuthResult;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MainFeedFragment extends Fragment {
@@ -104,6 +105,7 @@ public class MainFeedFragment extends Fragment {
         });
 
         memesViewModel.getAllMemes().observe(getViewLifecycleOwner(), memes -> {
+            Collections.sort(memes, (firstMeme, secondMeme) -> secondMeme.getLastUpdated().compareTo(firstMeme.getLastUpdated()));
             allMemes = memes;
             filterMemes();
 

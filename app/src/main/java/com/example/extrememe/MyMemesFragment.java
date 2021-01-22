@@ -25,6 +25,7 @@ import com.example.extrememe.model.Meme;
 import com.example.extrememe.model.meme.MemeModel;
 import com.example.extrememe.services.LoginService;
 
+import java.util.Collections;
 import java.util.List;
 
 public class MyMemesFragment extends Fragment {
@@ -61,9 +62,19 @@ public class MyMemesFragment extends Fragment {
                 @Override
                 public void onChanged(List<Meme> memes) {
                     handleEmptyMemes(memes);
+                    Collections.sort(memes, (firstMeme, secondMeme) -> secondMeme.getLastUpdated().compareTo(firstMeme.getLastUpdated()));
                     adapter.data = memes;
                     adapter.notifyDataSetChanged();
-                    adapter.setOnMemeLikeListener((meme) -> true);
+                    adapter.setOnMemeLikeListener((meme) -> {
+                        if (LoginService.getInstance(MyMemesFragment.super.getContext()).isLoggedIn()) {
+                            likeMeme(meme);
+                        } else {
+                            alBuilder.setTitle("FAILED").setMessage("Please log in to like memes :)");
+                            alBuilder.show();
+                        }
+
+                        return true;
+                    });
 
                     adapter.setOnRemoveListener(meme -> {
                         alBuilder.setTitle("INFO").setMessage("Are you sure you want to delete the meme?").setPositiveButton("yes", (dialogInterface, i) -> MemeModel.instance.removeMeme(meme, result1 -> {
@@ -88,6 +99,21 @@ public class MyMemesFragment extends Fragment {
         reloadData(LoginService.getInstance(this.getContext()).getFirebaseUser().getUid());
 
         return view;
+    }
+
+    private void likeMeme(Meme meme) {
+        String userId = LoginService.getInstance(this.getContext()).getFirebaseUser().getUid();
+        ImageView imageView = getView().findViewById(R.id.like_button);
+
+        if (!meme.getUsersLikes().contains(userId)) {
+            meme.getUsersLikes().add(userId);
+            imageView.setImageResource(R.drawable.ic_baseline_full_favorite_24);
+        } else {
+            meme.getUsersLikes().remove(userId);
+            imageView.setImageResource(R.drawable.ic_baseline_favorite_border_24);
+        }
+
+        MemeModel.instance.updateMeme(meme, result -> adapter.notifyDataSetChanged());
     }
 
     private void reloadData(String userId){

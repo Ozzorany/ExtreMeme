@@ -7,7 +7,6 @@ import com.example.extrememe.services.DatabaseDataLoader;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -28,7 +27,6 @@ public class MemeModelFirebase {
                             meme.fromMap(document.getData());
                             list.add(meme);
                         }
-                        Collections.reverse(list);
                         listener.onComplete(list);
                     } else {
                         Log.w(TAG, "Error getting documents.", task.getException());
@@ -51,7 +49,6 @@ public class MemeModelFirebase {
                             meme.fromMap(document.getData());
                             list.add(meme);
                         }
-                        Collections.reverse(list);
                         listener.onComplete(list);
                     } else {
                         Log.w(TAG, "Error getting documents.", task.getException());
