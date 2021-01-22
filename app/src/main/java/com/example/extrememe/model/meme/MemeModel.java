@@ -85,28 +85,25 @@ public class MemeModel {
         Long lastUpdated = sharedPreferences.getLong("lastUpdated", 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        memeModelFirebase.getMemesByUserId(userId, lastUpdated, new GetMemesByUserListener() {
-            @Override
-            public void onComplete(List<Meme> result) {
-                Long lastUpdated = 0L;
+        memeModelFirebase.getMemesByUserId(userId, lastUpdated, result -> {
+            Long lastUpdated1 = 0L;
 
-                for (Meme meme: result) {
-                    memeModelSql.addMeme(meme);
+            for (Meme meme: result) {
+                memeModelSql.addMeme(meme);
 
-                    if(meme.getLastUpdated() > lastUpdated)
-                    {
-                        lastUpdated = meme.getLastUpdated();
-                    }
+                if(meme.getLastUpdated() > lastUpdated1)
+                {
+                    lastUpdated1 = meme.getLastUpdated();
                 }
+            }
 
-                if(lastUpdated != 0) {
-                    editor.putLong("lastUpdated", lastUpdated);
-                    editor.apply();
-                }
+            if(lastUpdated1 != 0) {
+                editor.putLong("lastUpdated", lastUpdated1);
+                editor.apply();
+            }
 
-                if(refreshListener != null){
-                    refreshListener.onComplete();
-                }
+            if(refreshListener != null){
+                refreshListener.onComplete();
             }
         });
     }

@@ -31,6 +31,7 @@ import com.example.extrememe.services.LoginService;
 import com.example.extrememe.utils.CategoryViewUtils;
 import com.example.extrememe.utils.ColorUtils;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -176,6 +177,7 @@ public class CreateMemeFragment extends Fragment {
         uploadedMeme.setDescription(this.memeDescription.getText().toString());
         uploadedMeme.setImageUrl(memeURL);
         uploadedMeme.setUsersLikes(new ArrayList<>());
+        uploadedMeme.setLastUpdated(Timestamp.now().toDate().getTime());
 
         return uploadedMeme;
     }
