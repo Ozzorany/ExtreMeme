@@ -9,11 +9,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
@@ -33,6 +33,7 @@ public class MyMemesFragment extends Fragment {
     MemesAdapter adapter;
     TextView emptyMemesText;
     ImageView emptyMemesImage;
+    ProgressBar progressBar;
 
     private MenuItem signOutButton;
     private MenuItem signInButton;
@@ -46,6 +47,7 @@ public class MyMemesFragment extends Fragment {
         memesRv.setHasFixedSize(true);
         setHasOptionsMenu(true);
         memesViewModel = new ViewModelProvider(this).get(MemesViewModel.class);
+        progressBar = view.findViewById(R.id.pBar);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         memesRv.setLayoutManager(layoutManager);
@@ -58,35 +60,32 @@ public class MyMemesFragment extends Fragment {
         adapter.isEditAvailable = true;
 
         if (LoginService.getInstance(this.getContext()).getFirebaseUser() != null) {
-            memesViewModel.getMemesByUserId(LoginService.getInstance(this.getContext()).getFirebaseUser().getUid()).observe(getViewLifecycleOwner(), new Observer<List<Meme>>() {
-                @Override
-                public void onChanged(List<Meme> memes) {
-                    handleEmptyMemes(memes);
-                    Collections.sort(memes, (firstMeme, secondMeme) -> secondMeme.getLastUpdated().compareTo(firstMeme.getLastUpdated()));
-                    adapter.data = memes;
-                    adapter.notifyDataSetChanged();
-                    adapter.setOnMemeLikeListener((meme) -> {
-                        if (LoginService.getInstance(MyMemesFragment.super.getContext()).isLoggedIn()) {
-                            likeMeme(meme);
-                        } else {
-                            alBuilder.setTitle("FAILED").setMessage("Please log in to like memes :)");
-                            alBuilder.show();
-                        }
-
-                        return true;
-                    });
-
-                    adapter.setOnRemoveListener(meme -> {
-                        alBuilder.setTitle("INFO").setMessage("Are you sure you want to delete the meme?").setPositiveButton("yes", (dialogInterface, i) -> MemeModel.instance.removeMeme(meme, result1 -> {
-                            adapter.data.remove(meme);
-                            adapter.notifyDataSetChanged();
-                            dialogInterface.dismiss();
-                            handleEmptyMemes(adapter.data);
-                        })).setNegativeButton("no", (dialogInterface, i) -> dialogInterface.dismiss());
-
+            memesViewModel.getMemesByUserId(LoginService.getInstance(this.getContext()).getFirebaseUser().getUid()).observe(getViewLifecycleOwner(), memes -> {
+                handleEmptyMemes(memes);
+                Collections.sort(memes, (firstMeme, secondMeme) -> secondMeme.getLastUpdated().compareTo(firstMeme.getLastUpdated()));
+                adapter.data = memes;
+                adapter.notifyDataSetChanged();
+                adapter.setOnMemeLikeListener((meme) -> {
+                    if (LoginService.getInstance(MyMemesFragment.super.getContext()).isLoggedIn()) {
+                        likeMeme(meme);
+                    } else {
+                        alBuilder.setTitle("FAILED").setMessage("Please log in to like memes :)");
                         alBuilder.show();
-                    });
-                }
+                    }
+
+                    return true;
+                });
+
+                adapter.setOnRemoveListener(meme -> {
+                    alBuilder.setTitle("INFO").setMessage("Are you sure you want to delete the meme?").setPositiveButton("yes", (dialogInterface, i) -> MemeModel.instance.removeMeme(meme, result1 -> {
+                        adapter.data.remove(meme);
+                        adapter.notifyDataSetChanged();
+                        dialogInterface.dismiss();
+                        handleEmptyMemes(adapter.data);
+                    })).setNegativeButton("no", (dialogInterface, i) -> dialogInterface.dismiss());
+
+                    alBuilder.show();
+                });
             });
         }
 
@@ -118,6 +117,7 @@ public class MyMemesFragment extends Fragment {
 
     private void reloadData(String userId){
         MemeModel.instance.refreshAllMyMemes(userId, () -> {
+            progressBar.setVisibility(View.GONE);
         });
     }
 
