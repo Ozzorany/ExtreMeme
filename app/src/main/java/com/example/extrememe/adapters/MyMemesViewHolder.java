@@ -67,7 +67,7 @@ public class MyMemesViewHolder extends RecyclerView.ViewHolder {
         this.position = position;
 
         if (meme.getImageUrl() != null) {
-            Picasso.get().load(meme.getImageUrl()).fit().centerCrop().placeholder(R.drawable.ic_baseline_image_24).into(memeImage);
+            Picasso.get().load(meme.getImageUrl()).fit().centerInside().placeholder(R.drawable.ic_baseline_image_24).into(memeImage);
         }
 
         setLikeMemeIcon(meme);

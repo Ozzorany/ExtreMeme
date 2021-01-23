@@ -40,7 +40,7 @@ public class EditMemeFragment extends Fragment {
         memeDescription.setText(meme.getDescription());
         memeImage.setImageResource(R.drawable.ic_baseline_image_24);
         if (meme.getImageUrl() != null){
-            Picasso.get().load(meme.getImageUrl()).placeholder(R.drawable.ic_baseline_image_24).into(memeImage);
+            Picasso.get().load(meme.getImageUrl()).fit().centerInside().placeholder(R.drawable.ic_baseline_image_24).into(memeImage);
         }
 
         memeDescription.addTextChangedListener(new TextWatcher() {
