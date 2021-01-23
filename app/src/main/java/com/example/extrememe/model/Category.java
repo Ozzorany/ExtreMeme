@@ -1,7 +1,16 @@
 package com.example.extrememe.model;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity
 public class Category {
+    @PrimaryKey
+    @NonNull
     public String id;
+
+    @NonNull
     public String name;
 
     public Category() {
