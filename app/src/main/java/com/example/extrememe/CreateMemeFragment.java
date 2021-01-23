@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,8 +26,8 @@ import androidx.navigation.Navigation;
 
 import com.example.extrememe.model.Category;
 import com.example.extrememe.model.Meme;
+import com.example.extrememe.model.category.CategoryModel;
 import com.example.extrememe.model.meme.MemeModel;
-import com.example.extrememe.services.CategoryService;
 import com.example.extrememe.services.LoginService;
 import com.example.extrememe.utils.CategoryViewUtils;
 import com.example.extrememe.utils.ColorUtils;
@@ -38,6 +39,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -61,11 +63,13 @@ public class CreateMemeFragment extends Fragment {
     private MenuItem signInButton;
     private MenuItem loggedInUsername;
 
+    private List<Button> categoriesButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+        categoriesButton = new ArrayList<>();
         return inflater.inflate(R.layout.fragment_create_meme, container, false);
     }
 
@@ -91,21 +95,40 @@ public class CreateMemeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        new CategoryService().getMemeCategories(categories -> {
+
+        CategoryModel.instance.getLocalCategories().observe(getViewLifecycleOwner(), categories -> {
+            this.removeCategoriesButton();
+
+            Collections.reverse(categories);
+
             for (Category category : categories) {
                 this.addCategoryButtonToView(category);
             }
+
             this.initRandomButton();
         });
     }
 
     private void addCategoryButtonToView(Category category) {
-        Button categoryButton = new CategoryViewUtils()
-                .generateCategoryButton(category, this.getContext(), getResources(),
-                        getView().findViewById(R.id.categories_panel_create_meme));
+        if(getView() != null) {
+            Button categoryButton = new CategoryViewUtils()
+                    .generateCategoryButton(category, this.getContext(), getResources(),
+                            getView().findViewById(R.id.categories_panel_create_meme));
 
-        categoryButton.setOnClickListener(onClickCategory());
-        this.unselectButtonView(categoryButton);
+            categoryButton.setOnClickListener(onClickCategory());
+            this.categoriesButton.add(categoryButton);
+            this.unselectButtonView(categoryButton);
+        }
+    }
+
+    private void removeCategoriesButton() {
+        if(getView() != null && this.categoriesButton != null) {
+            LinearLayout parentLayout = getView().findViewById(R.id.categories_panel_create_meme);
+
+            for (Button categoryButton: this.categoriesButton) {
+                parentLayout.removeView(categoryButton);
+            }
+        }
     }
 
     private View.OnClickListener onClickCategory() {
