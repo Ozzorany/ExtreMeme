@@ -22,11 +22,11 @@
     <EditText
         android:id="@+id/editmeme_text_input"
         android:layout_width="0dp"
-        android:layout_height="179dp"
+        android:layout_height="110dp"
         android:background="#EFE4E4"
         android:text="TextView"
         android:textAlignment="center"
-        android:textSize="30sp"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
