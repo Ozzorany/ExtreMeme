@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,8 +27,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.extrememe.adapters.MemesAdapter;
 import com.example.extrememe.model.Category;
 import com.example.extrememe.model.Meme;
+import com.example.extrememe.model.category.CategoryModel;
 import com.example.extrememe.model.meme.MemeModel;
-import com.example.extrememe.services.CategoryService;
 import com.example.extrememe.services.LoginService;
 import com.example.extrememe.utils.CategoryViewUtils;
 import com.example.extrememe.utils.ColorUtils;
@@ -57,6 +58,7 @@ public class MainFeedFragment extends Fragment {
     MemesViewModel memesViewModel;
     private Button randomButton;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private List<Button> categoriesButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,6 +71,7 @@ public class MainFeedFragment extends Fragment {
         memesRv.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         memesRv.setLayoutManager(layoutManager);
+        this.categoriesButton = new ArrayList<>();
         memesViewModel = new ViewModelProvider(this).get(MemesViewModel.class);
         swipeRefreshLayout = view.findViewById(R.id.allmemes_swipe);
 
@@ -97,10 +100,15 @@ public class MainFeedFragment extends Fragment {
         super.onResume();
         AlertDialog.Builder alBuilder = new AlertDialog.Builder(this.getContext());
 
-        new CategoryService().getMemeCategories(categories -> {
+        CategoryModel.instance.getLocalCategories().observe(getViewLifecycleOwner(), categories -> {
+            this.removeCategoriesButtonIfNeeded(categories);
+
+            Collections.reverse(categories);
+
             for (Category category : categories) {
-                this.addCategoryButtonToView(category);
+                this.addCategoryButtonToViewIfNeeded(category);
             }
+
             this.initRandomButton();
         });
 
@@ -122,6 +130,24 @@ public class MainFeedFragment extends Fragment {
         });
 
         reloadData();
+    }
+
+    private void removeCategoriesButtonIfNeeded(List<Category> remoteCategories) {
+        if (getView() != null && this.categoriesButton != null) {
+            LinearLayout parentLayout = getView().findViewById(R.id.categories_panel_main);
+            boolean isButtonExists;
+            for (Button categoryButton : this.categoriesButton) {
+                isButtonExists = false;
+
+                for (Category remoteCategory : remoteCategories) {
+                    if (remoteCategory.id.equals(categoryButton.getTag())) {
+                        isButtonExists = true;
+                    }
+                }
+
+                if (!isButtonExists) parentLayout.removeView(categoryButton);
+            }
+        }
     }
 
     private void reloadData() {
@@ -237,14 +263,24 @@ public class MainFeedFragment extends Fragment {
         }
     }
 
-    private void addCategoryButtonToView(Category category) {
+    private void addCategoryButtonToViewIfNeeded(Category category) {
         if (getView() != null) {
-            Button categoryButton = new CategoryViewUtils()
-                    .generateCategoryButton(category, this.getContext(), getResources(),
-                            getView().findViewById(R.id.categories_panel_main));
+            boolean shouldAddButton = true;
+            for (Button displayedCategory: this.categoriesButton) {
+                if (displayedCategory.getTag().equals(category.id)) {
+                    shouldAddButton = false;
+                }
+            }
 
-            categoryButton.setOnClickListener(onClickCategory());
-            this.unselectButtonView(categoryButton);
+            if(shouldAddButton) {
+                Button categoryButton = new CategoryViewUtils()
+                        .generateCategoryButton(category, this.getContext(), getResources(),
+                                getView().findViewById(R.id.categories_panel_main));
+
+                categoryButton.setOnClickListener(onClickCategory());
+                this.categoriesButton.add(categoryButton);
+                this.unselectButtonView(categoryButton);
+            }
         }
     }
 
