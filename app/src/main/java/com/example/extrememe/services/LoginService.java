@@ -94,6 +94,7 @@ public class LoginService {
 
     public void signOut() {
         FirebaseAuth.getInstance().signOut();
+        mGoogleSignInClient.signOut();
         loginService.setGoogleAccount(null);
     }
 
