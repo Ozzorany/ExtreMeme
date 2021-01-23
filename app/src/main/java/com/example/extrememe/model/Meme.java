@@ -47,7 +47,6 @@ public class Meme implements Serializable {
         usersLikes = (List<String>)map.get("usersLikes");
         categories = (List<String>)map.get("categories");
         Timestamp timestamp = (Timestamp)map.get("lastUpdated");
-        //lastUpdated = timestamp.getSeconds();
         lastUpdated = timestamp.toDate().getTime();
     }
 
