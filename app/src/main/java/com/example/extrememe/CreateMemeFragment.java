@@ -210,7 +210,7 @@ public class CreateMemeFragment extends Fragment {
             res.getResult().getMetadata().getReference().getDownloadUrl().addOnCompleteListener(memeURL -> {
                 MemeModel.instance.insertMeme(createMemeObject(memeURL.getResult().toString()), (result) -> {
                     Toast.makeText(CreateMemeFragment.this.getContext(), "Uploaded", Toast.LENGTH_SHORT).show();
-                    Navigation.findNavController(this.getActivity(), R.id.mainactivity_navhost).navigateUp();
+                    Navigation.findNavController(this.getActivity(), R.id.mainactivity_navhost).navigate(R.id.mainFeedFragment);
                 });
             });
         });
