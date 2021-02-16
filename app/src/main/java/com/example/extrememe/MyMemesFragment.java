@@ -126,6 +126,10 @@ public class MyMemesFragment extends Fragment {
             emptyMemesImage.setVisibility(View.VISIBLE);
             emptyMemesText.setVisibility(View.VISIBLE);
         }
+        else {
+            emptyMemesImage.setVisibility(View.INVISIBLE);
+            emptyMemesText.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override

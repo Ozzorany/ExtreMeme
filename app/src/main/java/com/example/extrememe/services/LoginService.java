@@ -1,6 +1,5 @@
 package com.example.extrememe.services;
 
-import android.app.Activity;
 import android.content.Context;
 
 import com.example.extrememe.R;
@@ -18,7 +17,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginService {
-    private static final String TAG = "LoginService";
     public static final int RC_SIGN_IN = 9001;
     private static LoginService loginService;
     private FirebaseAuth firebaseAuth;
@@ -77,17 +75,14 @@ public class LoginService {
             }
 
             if (loginService.getGoogleAccount() != null && loginService.getFirebaseUser() == null) {
-                LoginService.getInstance(context).firebaseAuthWithGoogle(
-                        loginService.getGoogleAccount().getIdToken(),
-                        (Activity) context
-                );
+                LoginService.getInstance(context).firebaseAuthWithGoogle(loginService.getGoogleAccount().getIdToken());
             }
         }
 
         return loginService;
     }
 
-    public Task<AuthResult> firebaseAuthWithGoogle(String idToken, Activity activity) {
+    public Task<AuthResult> firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         return loginService.getFirebaseAuth().signInWithCredential(credential);
     }
@@ -101,14 +96,13 @@ public class LoginService {
     public boolean isLoggedIn() {
         return getGoogleAccount() != null && getFirebaseUser() != null;
     }
-  
+
     public String getUserDisplayName() {
         return this.googleAccount != null ? this.googleAccount.getDisplayName() : "לא מחובר";
     }
-  
-    public void createNewUser(Task<AuthResult> authResultTask){
-        if(authResultTask.getResult().getAdditionalUserInfo().isNewUser())
-        {
+
+    public void createNewUser(Task<AuthResult> authResultTask) {
+        if (authResultTask.getResult().getAdditionalUserInfo().isNewUser()) {
             User user = new User();
             user.setId(authResultTask.getResult().getUser().getUid());
             user.setAdmin(false);

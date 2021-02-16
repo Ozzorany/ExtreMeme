@@ -36,10 +36,10 @@ public class EditMemeFragment extends Fragment {
         Button saveBtn = view.findViewById(R.id.editmeme_btn);
         Meme meme = EditMemeFragmentArgs.fromBundle(getArguments()).getMeme();
         AlertDialog.Builder alBuilder = new AlertDialog.Builder(view.getContext());
-
         memeDescription.setText(meme.getDescription());
         memeImage.setImageResource(R.drawable.ic_baseline_image_24);
-        if (meme.getImageUrl() != null){
+
+        if (meme.getImageUrl() != null) {
             Picasso.get().load(meme.getImageUrl()).fit().centerInside().placeholder(R.drawable.ic_baseline_image_24).into(memeImage);
         }
 

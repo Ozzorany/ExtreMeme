@@ -64,9 +64,7 @@ public class MainFeedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_feed, container, false);
-
         setHasOptionsMenu(true);
-
         RecyclerView memesRv = view.findViewById(R.id.allMemes_rv);
         memesRv.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -74,10 +72,8 @@ public class MainFeedFragment extends Fragment {
         this.categoriesButton = new ArrayList<>();
         memesViewModel = new ViewModelProvider(this).get(MemesViewModel.class);
         swipeRefreshLayout = view.findViewById(R.id.allmemes_swipe);
-
         adapter = new MemesAdapter(getLayoutInflater());
         memesRv.setAdapter(adapter);
-
         this.noMemesFilteredImage = view.findViewById(R.id.mainfeed_iv_not_found);
         this.noMemesFilteredText = view.findViewById(R.id.mainfeed_tv_not_found);
 
@@ -266,13 +262,14 @@ public class MainFeedFragment extends Fragment {
     private void addCategoryButtonToViewIfNeeded(Category category) {
         if (getView() != null) {
             boolean shouldAddButton = true;
-            for (Button displayedCategory: this.categoriesButton) {
+
+            for (Button displayedCategory : this.categoriesButton) {
                 if (displayedCategory.getTag().equals(category.id)) {
                     shouldAddButton = false;
                 }
             }
 
-            if(shouldAddButton) {
+            if (shouldAddButton) {
                 Button categoryButton = new CategoryViewUtils()
                         .generateCategoryButton(category, this.getContext(), getResources(),
                                 getView().findViewById(R.id.categories_panel_main));
@@ -301,7 +298,7 @@ public class MainFeedFragment extends Fragment {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 LoginService.getInstance(this.getContext()).setGoogleAccount(account);
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.getDisplayName());
-                Task<AuthResult> authResultTask = LoginService.getInstance(this.getContext()).firebaseAuthWithGoogle(account.getIdToken(), this.getActivity());
+                Task<AuthResult> authResultTask = LoginService.getInstance(this.getContext()).firebaseAuthWithGoogle(account.getIdToken());
 
                 authResultTask.addOnCompleteListener(this.getActivity(), firebaseLoginRes -> {
                     if (firebaseLoginRes.isSuccessful()) {
